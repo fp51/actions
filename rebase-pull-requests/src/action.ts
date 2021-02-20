@@ -1,9 +1,10 @@
 import tmp from 'tmp';
 
 import * as core from '@actions/core';
-import { GitHub } from '@actions/github';
-import { PullsGetResponse } from '@octokit/rest';
+import { getOctokit } from '@actions/github';
 import { exec } from '@actions/exec';
+
+import { PullGetResponse } from './github';
 
 import { searchForPullsToRebase } from './search';
 import { rebasePullsWorkflow, RebaseErrorCallback } from './rebase';
@@ -30,7 +31,7 @@ const buildErrorComment = (
 };
 async function checkoutRebaseAndPush(
   git: Git,
-  pull: PullsGetResponse
+  pull: PullGetResponse
 ): Promise<'nothing to do' | 'done'> {
   const { base, head } = pull;
 
@@ -89,7 +90,7 @@ export async function run() {
     const label = core.getInput('label') || null;
     const onlyOne = core.getInput('onlyOne') === 'true';
 
-    const github = new GitHub(githubToken);
+    const github = getOctokit(githubToken);
 
     const pulls = await searchForPullsToRebase(github, base, label);
     console.log(`${pulls.length} pull requests found`);
@@ -98,16 +99,16 @@ export async function run() {
       console.log('Nothing to do');
       return;
     } else {
-      const prNumbers = pulls.map(pr => pr.number);
+      const prNumbers = pulls.map((pr) => pr.number);
 
       await rebasePullsWorkflow(
         github,
         prNumbers,
         onlyOne,
-        async (pull: PullsGetResponse) => {
+        async (pull: PullGetResponse) => {
           let tmpDir: tmp.DirResult = {
             name: '',
-            removeCallback: () => {},
+            removeCallback: () => {}, // eslint-disable-line @typescript-eslint/no-empty-function
           };
 
           try {

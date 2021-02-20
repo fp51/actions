@@ -1,8 +1,8 @@
 import tmp from 'tmp';
 import * as core from '@actions/core';
-import { GitHub } from '@actions/github';
 import { exec } from '@actions/exec';
-import { PullsGetResponse } from '@octokit/rest';
+
+import { GitHub, PullGetResponse } from './github';
 
 import { searchForPullsToRebase } from './search';
 import {
@@ -209,11 +209,11 @@ describe('action', () => {
       (rebasePullsWorkflow as jest.Mock).mockImplementation(
         async (
           _: GitHub,
-          __: PullsGetResponse['number'][],
+          __: PullGetResponse['number'][],
           ___: boolean,
           rebase: RebaseCallback
         ) => {
-          await rebase(pull as PullsGetResponse);
+          await rebase(pull as PullGetResponse);
         }
       );
 
@@ -235,11 +235,11 @@ describe('action', () => {
       (rebasePullsWorkflow as jest.Mock).mockImplementation(
         async (
           _: GitHub,
-          __: PullsGetResponse['number'][],
+          __: PullGetResponse['number'][],
           ___: boolean,
           rebase: RebaseCallback
         ) => {
-          await rebase(pull as PullsGetResponse);
+          await rebase(pull as PullGetResponse);
         }
       );
 
@@ -255,11 +255,11 @@ describe('action', () => {
       (rebasePullsWorkflow as jest.Mock).mockImplementation(
         async (
           _: GitHub,
-          __: PullsGetResponse['number'][],
+          __: PullGetResponse['number'][],
           ___: boolean,
           rebase: RebaseCallback
         ) => {
-          await rebase(pull as PullsGetResponse);
+          await rebase(pull as PullGetResponse);
         }
       );
 
@@ -292,11 +292,11 @@ describe('action', () => {
       (rebasePullsWorkflow as jest.Mock).mockImplementation(
         async (
           _: GitHub,
-          __: PullsGetResponse['number'][],
+          __: PullGetResponse['number'][],
           ___: boolean,
           rebase: RebaseCallback
         ) => {
-          await rebase(pull as PullsGetResponse);
+          await rebase(pull as PullGetResponse);
         }
       );
 
@@ -328,11 +328,11 @@ describe('action', () => {
       (rebasePullsWorkflow as jest.Mock).mockImplementation(
         async (
           _: GitHub,
-          __: PullsGetResponse['number'][],
+          __: PullGetResponse['number'][],
           ___: boolean,
           rebase: RebaseCallback
         ) => {
-          await rebase(pull as PullsGetResponse);
+          await rebase(pull as PullGetResponse);
         }
       );
 
@@ -368,11 +368,11 @@ describe('action', () => {
       (rebasePullsWorkflow as jest.Mock).mockImplementation(
         async (
           _: GitHub,
-          __: PullsGetResponse['number'][],
+          __: PullGetResponse['number'][],
           ___: boolean,
           rebase: RebaseCallback
         ) => {
-          await rebase(pull as PullsGetResponse);
+          await rebase(pull as PullGetResponse);
         }
       );
 
@@ -423,12 +423,12 @@ describe('action', () => {
         (rebasePullsWorkflow as jest.Mock).mockImplementation(
           async (
             _: GitHub,
-            __: PullsGetResponse['number'][],
+            __: PullGetResponse['number'][],
             ___: boolean,
             ____: RebaseCallback,
             onRebaseError: RebaseErrorCallback
           ) => {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             return onRebaseError(1, reason);
           }

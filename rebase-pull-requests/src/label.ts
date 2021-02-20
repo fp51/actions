@@ -1,16 +1,16 @@
-import { GitHub, context } from '@actions/github';
-import { PullsGetResponse } from '@octokit/rest';
+import { context } from '@actions/github';
+
+import { GitHub, PullGetResponse } from './github';
 
 export async function removePRLabel(
   github: GitHub,
-  prNumber: PullsGetResponse['number'],
+  prNumber: PullGetResponse['number'],
   label: string
 ) {
   return github.issues.removeLabel({
     owner: context.repo.owner,
     repo: context.repo.repo,
 
-    // eslint-disable-next-line @typescript-eslint/camelcase
     issue_number: prNumber,
 
     name: label,

@@ -1,4 +1,6 @@
-import { GitHub, context } from '@actions/github';
+import { context } from '@actions/github';
+
+import { GitHub } from './github';
 
 import { searchForPullsToRebase } from './search';
 
@@ -19,7 +21,7 @@ describe('comment', () => {
     const base = 'toto';
     const label = null;
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     context.repo = {
       owner: 'owner',
@@ -50,7 +52,6 @@ describe('comment', () => {
       sort: 'created',
       order: 'asc',
 
-      // eslint-disable-next-line @typescript-eslint/camelcase
       per_page: 10,
     });
   });
@@ -59,7 +60,7 @@ describe('comment', () => {
     const base = 'toto';
     const label = 'something: hello';
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     context.repo = {
       owner: 'owner',
@@ -90,7 +91,6 @@ describe('comment', () => {
       sort: 'created',
       order: 'asc',
 
-      // eslint-disable-next-line @typescript-eslint/camelcase
       per_page: 10,
     });
   });
@@ -99,7 +99,7 @@ describe('comment', () => {
     const base = 'toto';
     const label = 'something';
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     context.repo = {
       owner: 'owner',

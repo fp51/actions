@@ -81,4 +81,5 @@ export function Git(token: string, directory: string) {
   };
 }
 
+// eslint-disable-next-line no-redeclare
 export type Git = ReturnType<typeof Git>;

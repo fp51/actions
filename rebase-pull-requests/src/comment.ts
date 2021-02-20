@@ -1,16 +1,17 @@
-import { GitHub, context } from '@actions/github';
-import { PullsGetResponse } from '@octokit/rest';
+import { context } from '@actions/github';
+import {} from '@octokit/rest';
+
+import { GitHub, PullGetResponse } from './github';
 
 export async function sendPRComment(
   github: GitHub,
-  prNumber: PullsGetResponse['number'],
+  prNumber: PullGetResponse['number'],
   message: string
 ) {
   return github.issues.createComment({
     owner: context.repo.owner,
     repo: context.repo.repo,
 
-    // eslint-disable-next-line @typescript-eslint/camelcase
     issue_number: prNumber,
 
     body: message,

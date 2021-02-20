@@ -11,8 +11,9 @@ const repo = 'react';
 jest.mock('@actions/exec');
 jest.mock('@actions/github');
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
+// eslint-disable-next-line no-import-assign
 github.context = {
   repo: {
     owner,

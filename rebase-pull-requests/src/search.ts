@@ -1,11 +1,12 @@
-import { GitHub, context } from '@actions/github';
-import { PullsGetResponse } from '@octokit/rest';
+import { context } from '@actions/github';
+
+import { GitHub, PullGetResponse } from './github';
 
 // incomplete type for issuesAndPullRequests response that returns any
 type SearchPRResponse = {
-  id: PullsGetResponse['id'];
-  number: PullsGetResponse['number'];
-  state: PullsGetResponse['state'];
+  id: PullGetResponse['id'];
+  number: PullGetResponse['number'];
+  state: PullGetResponse['state'];
 };
 
 export async function searchForPullsToRebase(
@@ -21,7 +22,6 @@ export async function searchForPullsToRebase(
     sort: 'created',
     order: 'asc',
 
-    // eslint-disable-next-line @typescript-eslint/camelcase
     per_page: 10, // TODO use input for that
   });
 
