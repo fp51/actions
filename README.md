@@ -10,6 +10,7 @@ It contains :
 - [`fp51/actions/find-pull-request`](./find-pull-request) 
 - [`fp51/actions/merge`](./merge) 
 - [`fp51/actions/rebase-pull-requests`](./rebase-pull-requests) 
+- [`fp51/actions/create-gh-pages-branch`](./create-gh-pages-branch) 
 
 ## Usage
 
