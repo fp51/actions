@@ -1,5 +1,5 @@
 import * as core from '@actions/core';
-import { GitHub } from '@actions/github';
+import { getOctokit } from '@actions/github';
 
 import { run } from './action';
 
@@ -12,7 +12,7 @@ const githubInstance = {
   },
 };
 
-((GitHub as unknown) as jest.Mock).mockImplementation(function() {
+((getOctokit as unknown) as jest.Mock).mockImplementation(function () {
   return githubInstance;
 });
 
@@ -98,7 +98,6 @@ describe('action', () => {
       q: query,
       sort: 'updated',
       order: 'desc',
-      // eslint-disable-next-line @typescript-eslint/camelcase
       per_page: 1,
     });
   });
@@ -140,7 +139,6 @@ describe('action', () => {
       q: query,
       sort: 'updated',
       order: 'desc',
-      // eslint-disable-next-line @typescript-eslint/camelcase
       per_page: 1,
     });
   });
@@ -182,7 +180,6 @@ describe('action', () => {
       q: query,
       sort: 'updated',
       order: 'desc',
-      // eslint-disable-next-line @typescript-eslint/camelcase
       per_page: 1,
     });
   });
@@ -224,7 +221,6 @@ describe('action', () => {
       q: query,
       sort: 'updated',
       order: 'desc',
-      // eslint-disable-next-line @typescript-eslint/camelcase
       per_page: 1,
     });
   });
