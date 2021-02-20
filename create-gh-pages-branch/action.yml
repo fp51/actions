@@ -1,0 +1,27 @@
+name: 'Create gh-pages branch'
+
+description: 'Create gh-pages branch on origin if not found already'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Fetch or create gh-pages
+      shell: bash
+      run: |
+        if git fetch origin gh-pages; then
+          # gh-pages is already on origin
+          # just track it locally
+          git branch --track gh-pages origin/gh-pages
+        else
+          # create a branch starting with a new root commit (empty branch)
+          git checkout --orphan gh-pages
+
+          # remove everything not commited that is listed because of --orphan
+          git reset .
+          git commit --allow-empty -m "Init gh-pages"
+
+          git push origin gh-pages
+
+          # go back to the previous branch
+          git checkout -
+        fi
