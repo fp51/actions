@@ -1,5 +1,5 @@
 import * as core from '@actions/core';
-import { GitHub, context } from '@actions/github';
+import { getOctokit, context } from '@actions/github';
 
 import { removePRLabel } from './label';
 import { sendPRComment } from './comment';
@@ -23,11 +23,11 @@ const githubInstance = {
   },
 };
 
-((GitHub as unknown) as jest.Mock).mockImplementation(function() {
+((getOctokit as unknown) as jest.Mock).mockImplementation(function () {
   return githubInstance;
 });
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 context.repo = {
   owner: 'org',
@@ -212,7 +212,6 @@ describe('action', () => {
     const pull = {
       state: 'open',
       mergeable: true,
-      // eslint-disable-next-line @typescript-eslint/camelcase
       mergeable_state: 'blocked',
     };
 
@@ -251,7 +250,6 @@ describe('action', () => {
     const pull = {
       state: 'open',
       mergeable: true,
-      // eslint-disable-next-line @typescript-eslint/camelcase
       mergeable_state: 'behind',
     };
 
@@ -290,7 +288,6 @@ describe('action', () => {
     const pull = {
       state: 'open',
       mergeable: true,
-      // eslint-disable-next-line @typescript-eslint/camelcase
       mergeable_state: 'draft',
     };
 
@@ -529,7 +526,6 @@ describe('action', () => {
     const pullOne = {
       state: 'open',
       mergeable: null,
-      // eslint-disable-next-line @typescript-eslint/camelcase
       mergeable_state: 'unknown',
       head: {
         ref: 'branch',
@@ -539,7 +535,6 @@ describe('action', () => {
     const pullTwo = {
       state: 'open',
       mergeable: true,
-      // eslint-disable-next-line @typescript-eslint/camelcase
       mergeable_state: 'unknown',
       head: {
         ref: 'branch',

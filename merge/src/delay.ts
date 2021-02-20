@@ -1,2 +1,2 @@
 export const delay = (millis: number) =>
-  new Promise(resolve => setTimeout(resolve, millis));
+  new Promise((resolve) => setTimeout(resolve, millis));
