@@ -1,6 +1,7 @@
 import * as core from '@actions/core';
-import { GitHub, context } from '@actions/github';
-import { PullsGetResponse } from '@octokit/rest';
+import { context, getOctokit } from '@actions/github';
+
+import { PullGetResponse, GitHub } from './github';
 
 import { removePRLabel } from './label';
 import { sendPRComment } from './comment';
@@ -8,23 +9,22 @@ import { delay } from './delay';
 
 const RETRY_DELAY = 5000;
 
-const hasLabel = (label: string, pull: PullsGetResponse) => {
+const hasLabel = (label: string, pull: PullGetResponse) => {
   const { labels } = pull;
 
-  return labels.find(currentLanel => currentLanel.name === label);
+  return labels.find((currentLanel) => currentLanel.name === label);
 };
 
 type MergeResult = 'done' | 'skip' | 'impossible' | 'need retry';
 async function merge(
   github: GitHub,
-  pullNumber: PullsGetResponse['number'],
+  pullNumber: PullGetResponse['number'],
   label: string | null
 ): Promise<MergeResult> {
   const response = await github.pulls.get({
     owner: context.repo.owner,
     repo: context.repo.repo,
 
-    // eslint-disable-next-line @typescript-eslint/camelcase
     pull_number: pullNumber,
   });
 
@@ -70,7 +70,6 @@ async function merge(
     owner: context.repo.owner,
     repo: context.repo.repo,
 
-    // eslint-disable-next-line @typescript-eslint/camelcase
     pull_number: pullNumber,
   });
 
@@ -97,7 +96,7 @@ export async function run() {
 
     const label = core.getInput('label') || null;
 
-    const github = new GitHub(githubToken);
+    const github = getOctokit(githubToken);
 
     let numberRetries = 1;
     let result: MergeResult = 'need retry';
