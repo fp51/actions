@@ -1,0 +1,34 @@
+name: 'Welcome Pull Requests'
+
+on: pull_request
+
+jobs:
+
+  comment:
+    runs-on: ubuntu-18.04
+
+    name: 'Comment with release branch'
+
+    steps:
+      - name: 'Build comment message'
+        id: buildMessage
+        env:
+          branch: ${{ github.event.pull_request.head.ref }}
+        run: |
+          releaseBranch=release-$branch
+          message='Hello! You can find the temporarily released actions in the [`'$releaseBranch'`](https://github.com/'$GITHUB_REPOSITORY'/tree/'$releaseBranch') branch'
+
+          echo ::set-output name=message::$message
+
+      - name: 'Comment on PR'
+        uses: actions/github-script@v3
+        if: github.event.action == 'opened'
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '${{ steps.buildMessage.outputs.message }}'
+            })

@@ -1,0 +1,32 @@
+name: Rebase Pull Requests
+author: Guillaume Clochard <guillaume@wuips.com>
+description: Use this actions to rebase pull requests
+
+inputs:
+  token:
+    description: A Github token.
+    required: true
+
+  base:
+    description: The base branch name or ref to rebase on.
+    required: false
+    default: 'main'
+
+  label:
+    description: Only rebase pull requests with this label
+    required: false
+
+  onlyOne:
+    description: >
+      Only rebase one pull request. Usefull if you have another workflow that
+      automatically merge pull requests. "true"|"false"
+    required: false
+    default: 'false'
+
+runs:
+  using: 'node12'
+  main: 'lib/main.js'
+
+branding:
+  color: 'orange'
+  icon: 'git-branch'

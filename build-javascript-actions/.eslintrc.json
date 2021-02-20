@@ -1,0 +1,44 @@
+{
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended",
+    "standard",
+    "plugin:prettier/recommended"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "@typescript-eslint",
+    "prettier"
+  ],
+  "env": {
+    "node": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module",
+    "project": "./tsconfig.eslint.json"
+  },
+  "rules": {
+    "prettier/prettier": [
+      "error",
+      {
+        "printWidth": 80,
+        "trailingComma": "es5",
+        "singleQuote": true
+      }
+    ],
+
+    "@typescript-eslint/explicit-function-return-type": 0
+  },
+  "overrides": [
+    {
+      "files": [
+        "**/*.test.*"
+      ],
+      "env": {
+        "jest": true
+      }
+    }
+  ]
+}

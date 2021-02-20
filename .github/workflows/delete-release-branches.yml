@@ -1,0 +1,36 @@
+name: Delete release branch once branch is deleted
+
+on: delete
+
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+
+    name: 'Delete branch'
+
+    steps:
+      - name: 'Checkout directory'
+        uses: actions/checkout@v2
+
+      - name: 'Init Git name'
+        run: |
+          git config --global user.name "Github Actions"
+          git config --global user.email "github-workflow@fp51.com"
+
+      - name: 'Delete branch'
+        if: github.event.ref_type == 'branch'
+        env:
+          REF: ${{ github.event.ref }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: >
+          branch=${REF#"refs/heads/"}
+          releaseBranch=release-$branch
+
+          if git fetch origin $releaseBranch; then
+            authenticatedUrl="https://x-access-token:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY.git"
+            git remote set-url origin $authenticatedUrl
+
+            git push origin --delete $releaseBranch
+          else
+            echo 'Branch does not exist on remote. Nothing to do.'
+          fi

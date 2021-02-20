@@ -1,0 +1,44 @@
+{
+  "name": "fp51-node12-build-javascript-actions",
+  "version": "0.0.0",
+  "main": "lib/main.js",
+  "scripts": {
+    "lint": "eslint src --ext js,ts",
+    "test": "jest --coverage",
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fp51/actions.git"
+  },
+  "keywords": [
+    "actions",
+    "github"
+  ],
+  "author": "Guillaume Clochard <guillaume@fp51.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@actions/core": "^1.0.0",
+    "@actions/exec": "^1.0.0",
+    "fs-extra": "^8.1.0"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^8.0.0",
+    "@types/jest": "^24.0.18",
+    "@types/node": "^12.7.3",
+    "@typescript-eslint/eslint-plugin": "^2.0.0",
+    "@typescript-eslint/parser": "^2.0.0",
+    "eslint": "^6.3.0",
+    "eslint-config-prettier": "^6.1.0",
+    "eslint-config-standard": "^14.1.0",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-node": "^9.2.0",
+    "eslint-plugin-prettier": "^3.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "jest": "^24.9.0",
+    "prettier": "^1.18.2",
+    "ts-jest": "^24.0.2",
+    "typescript": "^3.6.2"
+  }
+}

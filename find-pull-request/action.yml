@@ -1,0 +1,28 @@
+name: Find pull request
+author: Guillaume Clochard <guillaume@wuips.com>
+description: Use this actions to find a pull request from a branch
+
+inputs:
+  branch:
+    description: >
+      The branch (or the full git ref for the branch) to find the pull request for.
+      If not provided. We extract the branch from GITHUB_REF.
+    required: false
+
+  token:
+    description: A Github token.
+    required: true
+
+  repository:
+    description: >
+      The repository to find the issue/PR to comment on.
+      Default to <owner/repo> of the current workflow.
+    required: false
+
+runs:
+  using: 'node12'
+  main: 'lib/main.js'
+
+branding:
+  color: 'gray-dark'
+  icon: 'message-circle'

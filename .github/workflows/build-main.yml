@@ -1,0 +1,48 @@
+name: Build actions on release branch
+
+on:
+  push:
+    branches:
+    - main
+
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+
+    name: 'Build Javascript actions'
+
+    steps:
+      - name: 'Checkout directory'
+        uses: actions/checkout@v1
+
+      - name: 'Init Git name'
+        run: |
+          git config --global user.name "Github Actions"
+          git config --global user.email "github-workflow@fp51.com"
+
+      - name: 'Checkout release branch'
+        run: git checkout release
+
+      - name: 'Merge main on release'
+        run : git merge origin/main --strategy-option=theirs --no-ff
+
+      - name: 'Build Javascript actions'
+        uses: iadvize/actions/build-javascript-actions@624f91fd7fc81772cba9d3df9613b4c465ba4af4
+        with:
+          build_directory: 'lib'
+
+      - name: 'Commit and push'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          authenticatedUrl="https://x-access-token:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY.git"
+          git remote set-url origin $authenticatedUrl
+
+          if [ ! -n "$(git status --porcelain)" ]; then
+            echo "Nothing to commit.";
+          else
+            git add .
+            git commit --quiet --message "Built Javascript actions"
+          fi
+
+          git push

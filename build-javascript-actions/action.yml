@@ -1,0 +1,35 @@
+name: Build Javascript actions
+author: Guillaume Clochard <guillaume@wuips.com>
+description: Use this actions to build a monorepo of Javascript Github actions
+
+inputs:
+  actions_directory:
+    description: >
+      Where are the actions?
+      Change this if the actions are not in the root directory of your repo.
+    required: false
+    default: ./
+
+  build_directory:
+    description: >
+      Where is built javascript in an action directory?
+      If not set, we assume there is not build files to add, only node_modules.
+    required: false
+
+  install_command:
+    description: The command to install javascript libs for the action
+    required: false
+    default: 'npm ci'
+
+  build_command:
+    description: The command to build the action
+    required: false
+    default: 'npm run build'
+
+runs:
+  using: 'node12'
+  main: 'lib/main.js'
+
+branding:
+  icon: 'package'
+  color: 'blue'

@@ -1,0 +1,24 @@
+name: Merge
+author: Guillaume Clochard <guillaume@wuips.com>
+description: Use this actions to merge pull requests that are ready after a check_suite completed
+
+inputs:
+  token:
+    description: A Github token.
+    required: true
+
+  pullNumber:
+    description: 'The pull request number to merge'
+    required: true
+
+  label:
+    description: 'Only merge pull requests with this label'
+    required: false
+
+runs:
+  using: 'node12'
+  main: 'lib/main.js'
+
+branding:
+  color: 'orange'
+  icon: 'git-merge'
