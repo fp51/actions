@@ -1,20 +1,21 @@
-import { GitHub, context } from '@actions/github';
-import { PullsGetResponse } from '@octokit/rest';
+import { context } from '@actions/github';
+
+import { GitHub, PullGetResponse } from './github';
 
 type PRWorkflowResult = 'Rebased' | 'Cannot rebase' | 'Nothing to do';
 
 export type RebaseCallback = (
-  pull: PullsGetResponse
+  pull: PullGetResponse
 ) => Promise<'done' | 'nothing to do'>;
 
 export type RebaseErrorCallback = (
-  pullNumber: PullsGetResponse['number'],
+  pullNumber: PullGetResponse['number'],
   reason: 'not mergeable' | 'not rebaseable' | 'cannot rebase' | 'unknown'
 ) => Promise<void>;
 
 async function rebasePullWorkflow(
   github: GitHub,
-  pullNumber: PullsGetResponse['number'],
+  pullNumber: PullGetResponse['number'],
   onRebase: RebaseCallback,
   onRebaseError: RebaseErrorCallback
 ): Promise<PRWorkflowResult> {
@@ -22,7 +23,6 @@ async function rebasePullWorkflow(
     owner: context.repo.owner,
     repo: context.repo.repo,
 
-    // eslint-disable-next-line @typescript-eslint/camelcase
     pull_number: pullNumber,
   });
 
@@ -80,7 +80,7 @@ async function rebasePullWorkflow(
 
 export async function rebasePullsWorkflow(
   github: GitHub,
-  pullNumbers: PullsGetResponse['number'][],
+  pullNumbers: PullGetResponse['number'][],
   onlyFirstPulls: boolean,
   onRebase: RebaseCallback,
   onRebaseError: RebaseErrorCallback

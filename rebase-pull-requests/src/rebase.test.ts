@@ -1,9 +1,11 @@
-import { GitHub, context } from '@actions/github';
+import { context } from '@actions/github';
 import { rebasePullsWorkflow } from './rebase';
+
+import { GitHub } from './github';
 
 jest.mock('@actions/github');
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 context.repo = {
   owner: 'owner',
@@ -68,7 +70,6 @@ describe('rebase', () => {
 
     const pull = {
       state: 'open',
-      // eslint-disable-next-line @typescript-eslint/camelcase
       mergeable_state: 'clean',
     };
 
@@ -92,7 +93,6 @@ describe('rebase', () => {
 
     const pull = {
       state: 'open',
-      // eslint-disable-next-line @typescript-eslint/camelcase
       mergeable_state: 'behind',
       mergeable: false,
     };
@@ -117,7 +117,6 @@ describe('rebase', () => {
 
     const pull = {
       state: 'open',
-      // eslint-disable-next-line @typescript-eslint/camelcase
       mergeable_state: 'behind',
       mergeable: null,
       rebaseable: false,
@@ -143,7 +142,6 @@ describe('rebase', () => {
 
     const pull = {
       state: 'open',
-      // eslint-disable-next-line @typescript-eslint/camelcase
       mergeable_state: 'behind',
       mergeable: null,
       rebaseable: true,
@@ -169,7 +167,6 @@ describe('rebase', () => {
 
     const pull = {
       state: 'open',
-      // eslint-disable-next-line @typescript-eslint/camelcase
       mergeable_state: 'behind',
       mergeable: null,
       rebaseable: true,
@@ -195,7 +192,6 @@ describe('rebase', () => {
 
     const pull = {
       state: 'open',
-      // eslint-disable-next-line @typescript-eslint/camelcase
       mergeable_state: 'behind',
       mergeable: null,
       rebaseable: true,

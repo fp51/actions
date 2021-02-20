@@ -1,4 +1,6 @@
-import { GitHub, context } from '@actions/github';
+import { context } from '@actions/github';
+
+import { GitHub } from './github';
 
 import { sendPRComment } from './comment';
 
@@ -19,7 +21,7 @@ describe('comment', () => {
     const prNumber = 12;
     const comment = 'hello world';
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     context.repo = {
       owner: 'owner',
@@ -34,7 +36,6 @@ describe('comment', () => {
       owner: context.repo.owner,
       repo: context.repo.repo,
 
-      // eslint-disable-next-line @typescript-eslint/camelcase
       issue_number: prNumber,
 
       body: comment,
