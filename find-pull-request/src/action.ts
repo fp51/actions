@@ -1,12 +1,5 @@
 import * as core from '@actions/core';
-import { PullsGetResponse } from '@octokit/rest';
-import { GitHub } from '@actions/github';
-
-// incomplete type for issuesAndPullRequests response that returns any
-type SearchPRResponse = {
-  id: PullsGetResponse['id'];
-  number: PullsGetResponse['number'];
-};
+import { getOctokit } from '@actions/github';
 
 export async function run() {
   try {
@@ -36,7 +29,7 @@ export async function run() {
     const branch = ref.replace('refs/heads/', '');
     console.log(`Trying to find pull request for branch ${branch}`);
 
-    const github = new GitHub(githubToken);
+    const github = getOctokit(githubToken);
 
     const query = `repo:${repository} is:pr head:${branch}`;
 
@@ -44,7 +37,6 @@ export async function run() {
       q: query,
       sort: 'updated',
       order: 'desc',
-      // eslint-disable-next-line @typescript-eslint/camelcase
       per_page: 1,
     });
 
@@ -52,8 +44,7 @@ export async function run() {
       throw Error(`Search request error. Status ${status}`);
     }
 
-    const { items } = data;
-    const pulls = items as SearchPRResponse[];
+    const { items: pulls } = data;
 
     if (pulls.length === 0) {
       console.log('Found 0 pull request');
@@ -63,7 +54,7 @@ export async function run() {
       return;
     }
 
-    const pullNumbers = pulls.map(pull => pull.number);
+    const pullNumbers = pulls.map((pull) => pull.number);
     console.log(
       `Found ${pullNumbers.length} pull requests: ${pullNumbers.join(', ')}`
     );
