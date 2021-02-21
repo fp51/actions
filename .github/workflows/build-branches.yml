@@ -48,7 +48,7 @@ jobs:
           git merge origin/$branch --strategy-option=theirs --no-ff
 
       - name: 'Build Javascript actions'
-        uses: fp51/actions/build-javascript-actions@487d3feff432e41f139f529f92a611e92c8c7112
+        uses: fp51/actions/build-javascript-actions@v1
         with:
           build_directory: 'lib'
 
