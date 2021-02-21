@@ -67,10 +67,16 @@ export async function run() {
         cwd: actionDirectory,
       };
 
+      console.log(`Cleaning node_modules`);
+      await exec('rm', ['-rf', 'node_modules'], context);
+
       console.log(`Installing ${actionDirectory}`);
       await exec(installCommand, [], context);
 
       if (buildDirectory) {
+        console.log(`Cleaning ${buildDirectory}`);
+        await exec('rm', ['-rf', buildDirectory], context);
+
         console.log(`Building ${actionDirectory}`);
         await exec(buildCommand, [], context);
       }

@@ -37,7 +37,7 @@ describe('action', () => {
   });
 
   describe('without build directory and without .gitignore', () => {
-    it('should clean .gitignore and install', async () => {
+    it('should clean .gitignore, clean node_modules and install', async () => {
       ((fs.existsSync as unknown) as jest.Mock).mockImplementation(
         (file: string) => {
           if (file.indexOf('gitignore') > 0) {
@@ -71,20 +71,28 @@ describe('action', () => {
 
       await expect(run()).resolves.toBeUndefined();
 
-      expect(exec).toHaveBeenCalledTimes(2);
+      expect(exec).toHaveBeenCalledTimes(4);
 
-      expect(exec).toHaveBeenNthCalledWith(1, 'yarn install', [], {
+      expect(exec).toHaveBeenNthCalledWith(1, 'rm', ['-rf', 'node_modules'], {
         cwd: 'actions/action1/',
       });
 
       expect(exec).toHaveBeenNthCalledWith(2, 'yarn install', [], {
+        cwd: 'actions/action1/',
+      });
+
+      expect(exec).toHaveBeenNthCalledWith(3, 'rm', ['-rf', 'node_modules'], {
+        cwd: 'actions/action2/',
+      });
+
+      expect(exec).toHaveBeenNthCalledWith(4, 'yarn install', [], {
         cwd: 'actions/action2/',
       });
     });
   });
 
   describe('without build directory', () => {
-    it('should clean .gitignore and install', async () => {
+    it('should clean .gitignore, clean node_modules and install', async () => {
       ((fs.existsSync as unknown) as jest.Mock).mockReturnValue(true);
 
       ((core.getInput as unknown) as jest.Mock).mockImplementation(
@@ -110,7 +118,7 @@ describe('action', () => {
 
       await expect(run()).resolves.toBeUndefined();
 
-      expect(exec).toHaveBeenCalledTimes(4);
+      expect(exec).toHaveBeenCalledTimes(6);
 
       expect(exec).toHaveBeenNthCalledWith(1, 'sed', [
         '-i',
@@ -118,24 +126,32 @@ describe('action', () => {
         'actions/action1/.gitignore',
       ]);
 
-      expect(exec).toHaveBeenNthCalledWith(2, 'yarn install', [], {
+      expect(exec).toHaveBeenNthCalledWith(2, 'rm', ['-rf', 'node_modules'], {
         cwd: 'actions/action1/',
       });
 
-      expect(exec).toHaveBeenNthCalledWith(3, 'sed', [
+      expect(exec).toHaveBeenNthCalledWith(3, 'yarn install', [], {
+        cwd: 'actions/action1/',
+      });
+
+      expect(exec).toHaveBeenNthCalledWith(4, 'sed', [
         '-i',
         '/node_modules/d',
         'actions/action2/.gitignore',
       ]);
 
-      expect(exec).toHaveBeenNthCalledWith(4, 'yarn install', [], {
+      expect(exec).toHaveBeenNthCalledWith(5, 'rm', ['-rf', 'node_modules'], {
+        cwd: 'actions/action2/',
+      });
+
+      expect(exec).toHaveBeenNthCalledWith(6, 'yarn install', [], {
         cwd: 'actions/action2/',
       });
     });
   });
 
   describe('with build directory', () => {
-    it('should clean .gitignore, install and build actions', async () => {
+    it('should clean .gitignore, clean node_modules,clean build directory, install and build actions', async () => {
       ((fs.existsSync as unknown) as jest.Mock).mockReturnValue(true);
 
       ((core.getInput as unknown) as jest.Mock).mockImplementation(
@@ -161,7 +177,7 @@ describe('action', () => {
 
       await expect(run()).resolves.toBeUndefined();
 
-      expect(exec).toHaveBeenCalledTimes(8);
+      expect(exec).toHaveBeenCalledTimes(12);
 
       expect(exec).toHaveBeenNthCalledWith(1, 'sed', [
         '-i',
@@ -175,31 +191,47 @@ describe('action', () => {
         'actions/action1/.gitignore',
       ]);
 
-      expect(exec).toHaveBeenNthCalledWith(3, 'yarn install', [], {
+      expect(exec).toHaveBeenNthCalledWith(3, 'rm', ['-rf', 'node_modules'], {
         cwd: 'actions/action1/',
       });
 
-      expect(exec).toHaveBeenNthCalledWith(4, 'yarn run build', [], {
+      expect(exec).toHaveBeenNthCalledWith(4, 'yarn install', [], {
         cwd: 'actions/action1/',
       });
 
-      expect(exec).toHaveBeenNthCalledWith(5, 'sed', [
+      expect(exec).toHaveBeenNthCalledWith(5, 'rm', ['-rf', 'build'], {
+        cwd: 'actions/action1/',
+      });
+
+      expect(exec).toHaveBeenNthCalledWith(6, 'yarn run build', [], {
+        cwd: 'actions/action1/',
+      });
+
+      expect(exec).toHaveBeenNthCalledWith(7, 'sed', [
         '-i',
         '/node_modules/d',
         'actions/action2/.gitignore',
       ]);
 
-      expect(exec).toHaveBeenNthCalledWith(6, 'sed', [
+      expect(exec).toHaveBeenNthCalledWith(8, 'sed', [
         '-i',
         '/build/d',
         'actions/action2/.gitignore',
       ]);
 
-      expect(exec).toHaveBeenNthCalledWith(7, 'yarn install', [], {
+      expect(exec).toHaveBeenNthCalledWith(9, 'rm', ['-rf', 'node_modules'], {
         cwd: 'actions/action2/',
       });
 
-      expect(exec).toHaveBeenNthCalledWith(8, 'yarn run build', [], {
+      expect(exec).toHaveBeenNthCalledWith(10, 'yarn install', [], {
+        cwd: 'actions/action2/',
+      });
+
+      expect(exec).toHaveBeenNthCalledWith(11, 'rm', ['-rf', 'build'], {
+        cwd: 'actions/action2/',
+      });
+
+      expect(exec).toHaveBeenNthCalledWith(12, 'yarn run build', [], {
         cwd: 'actions/action2/',
       });
     });
