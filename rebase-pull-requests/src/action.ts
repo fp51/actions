@@ -3,7 +3,6 @@ import tmp from 'tmp';
 import * as core from '@actions/core';
 import { getOctokit } from '@actions/github';
 import { exec } from '@actions/exec';
-
 import { PullGetResponse } from './github';
 
 import { searchForPullsToRebase } from './search';
@@ -112,7 +111,7 @@ export async function run() {
           };
 
           try {
-            tmpDir = tmp.dirSync();
+            tmpDir = tmp.dirSync({ unsafeCleanup: true });
 
             // copy the current directory somewhere to not affect the repo
             await exec('cp', ['-r', '.', tmpDir.name]);
