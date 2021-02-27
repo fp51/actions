@@ -33,6 +33,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.run = void 0;
 const tmp_1 = __importDefault(require("tmp"));
+const path_1 = __importDefault(require("path"));
 const core = __importStar(require("@actions/core"));
 const github_1 = require("@actions/github");
 const exec_1 = require("@actions/exec");
@@ -112,9 +113,10 @@ function run() {
                     };
                     try {
                         tmpDir = tmp_1.default.dirSync({ unsafeCleanup: true });
+                        const directoryPath = path_1.default.resolve(tmpDir.name);
                         // copy the current directory somewhere to not affect the repo
-                        yield exec_1.exec('cp', ['-r', '.', tmpDir.name]);
-                        const git = git_1.Git(githubToken, tmpDir.name);
+                        yield exec_1.exec('cp', ['-r', '.', directoryPath]);
+                        const git = git_1.Git(githubToken, directoryPath);
                         return checkoutRebaseAndPush(git, pull);
                     }
                     finally {
