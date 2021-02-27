@@ -1,43 +1,30 @@
 import { context } from '@actions/github';
 import { exec } from '@actions/exec';
 
-export function Git(token: string, directory: string) {
+export function Git(token: string) {
   const url = `https://x-access-token:${token}@github.com/${context.repo.owner}/${context.repo.repo}.git`;
 
-  console.log({ directory });
-
-  const execOptions = {
-    cwd: directory,
-  };
-
-  const execCommand = async (
-    command: string,
+  const execGit = async (
     args: string[],
     options: Parameters<typeof exec>[2] = {}
   ) => {
-    const result = await exec(command, args, { ...execOptions, ...options });
+    const result = await exec('git', args, options);
 
     if (result !== 0) {
-      throw new Error(`Command ${command} ${args.join(' ')} failed`);
+      throw new Error(`Command git ${args.join(' ')} failed`);
     }
   };
 
   const init = async () => {
-    await execCommand('git', [
-      'config',
-      '--global',
-      'user.name',
-      '"Rebase Action"',
-    ]);
-    await execCommand('git', ['remote', 'set-url', 'origin', url]);
+    await execGit(['config', '--global', 'user.name', '"Rebase Action"']);
+    await execGit(['remote', 'set-url', 'origin', url]);
   };
 
-  const checkout = (branch: string) => execCommand('git', ['checkout', branch]);
+  const checkout = (branch: string) => execGit(['checkout', branch]);
 
-  const fetch = (branch: string) =>
-    execCommand('git', ['fetch', 'origin', branch]);
+  const fetch = (branch: string) => execGit(['fetch', 'origin', branch]);
 
-  const rebase = (ref: string) => execCommand('git', ['rebase', ref]);
+  const rebase = (ref: string) => execGit(['rebase', ref]);
 
   const currentSha = async (ref: string) => {
     let output = '';
@@ -48,12 +35,12 @@ export function Git(token: string, directory: string) {
       },
     };
 
-    await execCommand(`git`, ['rev-parse', ref], { listeners });
+    await execGit(['rev-parse', ref], { listeners });
 
     return output.trim();
   };
 
-  const push = () => execCommand('git', ['push', '--force-with-lease']);
+  const push = () => execGit(['push', '--force-with-lease']);
 
   const currentBranch = async () => {
     let output = '';
@@ -64,7 +51,7 @@ export function Git(token: string, directory: string) {
       },
     };
 
-    await execCommand('git', ['branch', '--show-current'], {
+    await execGit(['branch', '--show-current'], {
       listeners,
     });
 
