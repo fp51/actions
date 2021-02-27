@@ -45,14 +45,14 @@ describe('git', () => {
       expect(exec).toHaveBeenCalledTimes(2);
 
       expect(exec).toHaveBeenCalledWith(
-        expect.stringMatching('git config --global user.name'),
-        expect.anything(),
+        'git',
+        ['config', '--global', 'user.name', '"Rebase Action"'],
         expect.anything()
       );
 
       expect(exec).toHaveBeenCalledWith(
-        `git remote set-url origin ${url}`,
-        expect.anything(),
+        'git',
+        ['remote', 'set-url', 'origin', url],
         expect.anything()
       );
     });
@@ -64,8 +64,8 @@ describe('git', () => {
       await git.fetch(branch);
 
       expect(exec).toHaveBeenCalledWith(
-        `git fetch origin ${branch}`,
-        expect.anything(),
+        'git',
+        ['fetch', 'origin', branch],
         expect.anything()
       );
     });
@@ -77,8 +77,8 @@ describe('git', () => {
       await git.checkout(branch);
 
       expect(exec).toHaveBeenCalledWith(
-        `git checkout ${branch}`,
-        expect.anything(),
+        'git',
+        ['checkout', branch],
         expect.anything()
       );
     });
@@ -90,8 +90,8 @@ describe('git', () => {
       await git.rebase(branch);
 
       expect(exec).toHaveBeenCalledWith(
-        `git rebase ${branch}`,
-        expect.anything(),
+        'git',
+        ['rebase', branch],
         expect.anything()
       );
     });
@@ -117,8 +117,8 @@ describe('git', () => {
       const result = await git.currentSha(ref);
 
       expect(exec).toHaveBeenCalledWith(
-        `git rev-parse ${ref}`,
-        expect.anything(),
+        'git',
+        ['rev-parse', ref],
         expect.anything()
       );
       expect(result).toEqual(commitSha);
@@ -130,8 +130,8 @@ describe('git', () => {
       await git.push();
 
       expect(exec).toHaveBeenCalledWith(
-        `git push --force-with-lease`,
-        expect.anything(),
+        'git',
+        ['push', '--force-with-lease'],
         expect.anything()
       );
     });
@@ -156,8 +156,8 @@ describe('git', () => {
       const result = await git.currentBranch();
 
       expect(exec).toHaveBeenCalledWith(
-        `git branch --show-current`,
-        expect.anything(),
+        'git',
+        ['branch', '--show-current'],
         expect.anything()
       );
       expect(result).toEqual(branch);
