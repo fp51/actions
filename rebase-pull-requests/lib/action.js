@@ -100,6 +100,7 @@ function run() {
             const github = github_1.getOctokit(githubToken);
             const pulls = yield search_1.searchForPullsToRebase(github, base, label);
             console.log(`${pulls.length} pull requests found`);
+            const initialRepoDirectory = process.cwd();
             if (pulls.length === 0) {
                 console.log('Nothing to do');
                 return;
@@ -107,20 +108,22 @@ function run() {
             else {
                 const prNumbers = pulls.map((pr) => pr.number);
                 yield rebase_1.rebasePullsWorkflow(github, prNumbers, onlyOne, (pull) => __awaiter(this, void 0, void 0, function* () {
-                    let tmpDir = {
-                        name: '',
-                        removeCallback: () => { },
-                    };
+                    // I don't use unsafeCleanup tmp option as it seems to cause trouble
+                    // for @actions/exec
+                    const tmpDir = tmp_1.default.dirSync();
+                    const directoryPath = path_1.default.resolve(tmpDir.name);
+                    console.log({ directoryPath });
                     try {
-                        tmpDir = tmp_1.default.dirSync({ unsafeCleanup: true });
-                        const directoryPath = path_1.default.resolve(tmpDir.name);
                         // copy the current directory somewhere to not affect the repo
                         yield exec_1.exec('cp', ['-r', '.', directoryPath]);
-                        const git = git_1.Git(githubToken, directoryPath);
-                        return checkoutRebaseAndPush(git, pull);
+                        process.chdir(directoryPath);
+                        const git = git_1.Git(githubToken);
+                        const result = yield checkoutRebaseAndPush(git, pull);
+                        return result;
                     }
                     finally {
-                        tmpDir && tmpDir.removeCallback();
+                        process.chdir(initialRepoDirectory);
+                        yield exec_1.exec('rm', ['-rf', directoryPath]);
                     }
                 }), (pullNumber, reason) => __awaiter(this, void 0, void 0, function* () {
                     if (label) {
