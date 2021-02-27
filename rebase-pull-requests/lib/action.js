@@ -111,7 +111,7 @@ function run() {
                         removeCallback: () => { },
                     };
                     try {
-                        tmpDir = tmp_1.default.dirSync();
+                        tmpDir = tmp_1.default.dirSync({ unsafeCleanup: true });
                         // copy the current directory somewhere to not affect the repo
                         yield exec_1.exec('cp', ['-r', '.', tmpDir.name]);
                         const git = git_1.Git(githubToken, tmpDir.name);
