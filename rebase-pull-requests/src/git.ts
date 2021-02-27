@@ -1,38 +1,43 @@
 import { context } from '@actions/github';
 import { exec } from '@actions/exec';
 
-type Options = Parameters<typeof exec>[2];
-
-const execCommand = async (command: string, options: Options) => {
-  const result = await exec(command, [], options);
-
-  if (result !== 0) {
-    throw new Error(`Command ${command} failed`);
-  }
-};
-
 export function Git(token: string, directory: string) {
   const url = `https://x-access-token:${token}@github.com/${context.repo.owner}/${context.repo.repo}.git`;
+
+  console.log({ directory });
 
   const execOptions = {
     cwd: directory,
   };
 
-  const init = async () => {
-    await execCommand(
-      'git config --global user.name "Rebase Action"',
-      execOptions
-    );
-    await execCommand(`git remote set-url origin ${url}`, execOptions);
+  const execCommand = async (
+    command: string,
+    args: string[],
+    options: Parameters<typeof exec>[2] = {}
+  ) => {
+    const result = await exec(command, args, { ...execOptions, ...options });
+
+    if (result !== 0) {
+      throw new Error(`Command ${command} ${args.join(' ')} failed`);
+    }
   };
 
-  const checkout = (branch: string) =>
-    execCommand(`git checkout ${branch}`, execOptions);
+  const init = async () => {
+    await execCommand('git', [
+      'config',
+      '--global',
+      'user.name',
+      '"Rebase Action"',
+    ]);
+    await execCommand('git', ['remote', 'set-url', 'origin', url]);
+  };
+
+  const checkout = (branch: string) => execCommand('git', ['checkout', branch]);
 
   const fetch = (branch: string) =>
-    execCommand(`git fetch origin ${branch}`, execOptions);
+    execCommand('git', ['fetch', 'origin', branch]);
 
-  const rebase = (ref: string) => execCommand(`git rebase ${ref}`, execOptions);
+  const rebase = (ref: string) => execCommand('git', ['rebase', ref]);
 
   const currentSha = async (ref: string) => {
     let output = '';
@@ -43,15 +48,12 @@ export function Git(token: string, directory: string) {
       },
     };
 
-    await execCommand(`git rev-parse ${ref}`, {
-      ...execOptions,
-      listeners,
-    });
+    await execCommand(`git`, ['rev-parse', ref], { listeners });
 
     return output.trim();
   };
 
-  const push = () => execCommand(`git push --force-with-lease`, execOptions);
+  const push = () => execCommand('git', ['push', '--force-with-lease']);
 
   const currentBranch = async () => {
     let output = '';
@@ -62,8 +64,7 @@ export function Git(token: string, directory: string) {
       },
     };
 
-    await execCommand('git branch --show-current', {
-      ...execOptions,
+    await execCommand('git', ['branch', '--show-current'], {
       listeners,
     });
 
