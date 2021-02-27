@@ -95,6 +95,8 @@ export async function run() {
     const pulls = await searchForPullsToRebase(github, base, label);
     console.log(`${pulls.length} pull requests found`);
 
+    const initialRepoDirectory = process.cwd();
+
     if (pulls.length === 0) {
       console.log('Nothing to do');
       return;
@@ -106,24 +108,27 @@ export async function run() {
         prNumbers,
         onlyOne,
         async (pull: PullGetResponse) => {
-          let tmpDir: tmp.DirResult = {
-            name: '',
-            removeCallback: () => {}, // eslint-disable-line @typescript-eslint/no-empty-function
-          };
+          // I don't use unsafeCleanup tmp option as it seems to cause trouble
+          // for @actions/exec
+          const tmpDir = tmp.dirSync();
+
+          const directoryPath = path.resolve(tmpDir.name);
+
+          console.log({ directoryPath });
 
           try {
-            tmpDir = tmp.dirSync({ unsafeCleanup: true });
-
-            const directoryPath = path.resolve(tmpDir.name);
-
             // copy the current directory somewhere to not affect the repo
             await exec('cp', ['-r', '.', directoryPath]);
 
-            const git = Git(githubToken, directoryPath);
+            process.chdir(directoryPath);
 
-            return checkoutRebaseAndPush(git, pull);
+            const git = Git(githubToken);
+
+            const result = await checkoutRebaseAndPush(git, pull);
+            return result;
           } finally {
-            tmpDir && tmpDir.removeCallback();
+            process.chdir(initialRepoDirectory);
+            await exec('rm', ['-rf', directoryPath]);
           }
         },
         async (pullNumber, reason) => {

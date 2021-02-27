@@ -31,6 +31,8 @@ const head = 'head-branch';
 const base = 'toto-branch';
 const label = 'my-label';
 
+process.chdir = jest.fn();
+
 (core.getInput as jest.Mock).mockImplementation((input: string) => {
   switch (input) {
     case 'token':
@@ -60,24 +62,22 @@ const gitInstance = {
   currentBranch: jest.fn(),
 };
 
-(Git as jest.Mock).mockImplementation(() => gitInstance);
-
 describe('action', () => {
   beforeEach(() => {
-    ((tmp.dirSync as unknown) as jest.Mock).mockReset();
+    ((tmp.dirSync as unknown) as jest.Mock)
+      .mockReset()
+      .mockReturnValue({ name: 'acbd' });
+    (Git as jest.Mock).mockReset().mockImplementation(() => gitInstance);
     ((exec as unknown) as jest.Mock).mockReset();
     (searchForPullsToRebase as jest.Mock).mockReset();
+    (process.chdir as jest.Mock).mockReset();
+
     Object.keys(gitInstance).forEach((key: string) => {
       gitInstance[key].mockReset();
     });
   });
 
   it('should search for pull requests', async () => {
-    const tmpDir = {
-      removeCallback: jest.fn(),
-    };
-
-    ((tmp.dirSync as unknown) as jest.Mock).mockReturnValue(tmpDir);
     ((exec as unknown) as jest.Mock).mockResolvedValue(0);
 
     await expect(run()).resolves.toBeUndefined();
@@ -90,11 +90,6 @@ describe('action', () => {
   });
 
   it('should fail if search for pull requests fails', async () => {
-    const tmpDir = {
-      removeCallback: jest.fn(),
-    };
-
-    ((tmp.dirSync as unknown) as jest.Mock).mockReturnValue(tmpDir);
     ((exec as unknown) as jest.Mock).mockResolvedValue(0);
     (searchForPullsToRebase as jest.Mock).mockRejectedValue(
       new Error('search ko')
@@ -106,13 +101,8 @@ describe('action', () => {
   });
 
   it('should do nothing if no pull requests', async () => {
-    const tmpDir = {
-      removeCallback: jest.fn(),
-    };
-
     const pulls = [];
 
-    ((tmp.dirSync as unknown) as jest.Mock).mockReturnValue(tmpDir);
     ((exec as unknown) as jest.Mock).mockResolvedValue(0);
     (searchForPullsToRebase as jest.Mock).mockResolvedValue(pulls);
 
@@ -122,17 +112,12 @@ describe('action', () => {
   });
 
   it('should call rebasePullsWorkflow for pull requests', async () => {
-    const tmpDir = {
-      removeCallback: jest.fn(),
-    };
-
     const pulls = [
       {
         number: 1,
       },
     ];
 
-    ((tmp.dirSync as unknown) as jest.Mock).mockReturnValue(tmpDir);
     ((exec as unknown) as jest.Mock).mockResolvedValue(0);
     (searchForPullsToRebase as jest.Mock).mockResolvedValue(pulls);
 
@@ -148,17 +133,12 @@ describe('action', () => {
   });
 
   it('should fails if rebasePullsWorkflow fails', async () => {
-    const tmpDir = {
-      removeCallback: jest.fn(),
-    };
-
     const pulls = [
       {
         number: 1,
       },
     ];
 
-    ((tmp.dirSync as unknown) as jest.Mock).mockReturnValue(tmpDir);
     ((exec as unknown) as jest.Mock).mockResolvedValue(0);
     (searchForPullsToRebase as jest.Mock).mockResolvedValue(pulls);
     (rebasePullsWorkflow as jest.Mock).mockRejectedValue(
@@ -171,11 +151,6 @@ describe('action', () => {
   });
 
   describe('rebase a pull request', () => {
-    const tmpDir = {
-      name: '/path/tmp/dir',
-      removeCallback: jest.fn(),
-    };
-
     const pulls = [
       {
         number: 1,
@@ -199,11 +174,8 @@ describe('action', () => {
     };
 
     it('should create a tmp directory and copy the current directory', async () => {
-      const tmpDir = {
-        removeCallback: jest.fn(),
-      };
-
-      ((tmp.dirSync as unknown) as jest.Mock).mockReturnValue(tmpDir);
+      const tmpDirName = '/tmp/safhjsdldfhj';
+      (tmp.dirSync as jest.Mock).mockReturnValue({ name: tmpDirName });
       ((exec as unknown) as jest.Mock).mockResolvedValue(0);
       (searchForPullsToRebase as jest.Mock).mockResolvedValue(pulls);
       (rebasePullsWorkflow as jest.Mock).mockImplementation(
@@ -220,15 +192,13 @@ describe('action', () => {
       await expect(run()).resolves.toBeUndefined();
 
       expect(tmp.dirSync).toHaveBeenCalled();
+      expect(process.chdir).toHaveBeenCalledWith(tmpDirName);
     });
 
     it('should always try to remove tmp directory', async () => {
-      const tmpDir = {
-        removeCallback: jest.fn(),
-      };
-
-      ((tmp.dirSync as unknown) as jest.Mock).mockReturnValue(tmpDir);
-      ((exec as unknown) as jest.Mock).mockImplementation(() => {
+      const tmpDirName = '/tmp/safhjsdldfhj';
+      (tmp.dirSync as jest.Mock).mockReturnValue({ name: tmpDirName });
+      (Git as jest.Mock).mockImplementation(() => {
         throw new Error('KO');
       });
       (searchForPullsToRebase as jest.Mock).mockResolvedValue(pulls);
@@ -244,12 +214,10 @@ describe('action', () => {
       );
 
       await expect(run()).resolves.toBeUndefined();
-
-      expect(tmpDir.removeCallback).toHaveBeenCalled();
+      expect(exec).toHaveBeenCalledWith('rm', ['-rf', tmpDirName]);
     });
 
     it('should checkout, rebase and push ', async () => {
-      ((tmp.dirSync as unknown) as jest.Mock).mockReturnValue(tmpDir);
       ((exec as unknown) as jest.Mock).mockResolvedValue(0);
       (searchForPullsToRebase as jest.Mock).mockResolvedValue(pulls);
       (rebasePullsWorkflow as jest.Mock).mockImplementation(
@@ -268,7 +236,7 @@ describe('action', () => {
 
       await expect(run()).resolves.toBeUndefined();
 
-      expect(Git).toHaveBeenCalledWith(token, tmpDir.name);
+      expect(Git).toHaveBeenCalledWith(token);
 
       expect(gitInstance.init).toHaveBeenCalledWith();
       expect(gitInstance.fetch).toHaveBeenCalledWith(pullHead.ref);
@@ -286,7 +254,6 @@ describe('action', () => {
     });
 
     it('should do nothing if sha changed', async () => {
-      ((tmp.dirSync as unknown) as jest.Mock).mockReturnValue(tmpDir);
       ((exec as unknown) as jest.Mock).mockResolvedValue(0);
       (searchForPullsToRebase as jest.Mock).mockResolvedValue(pulls);
       (rebasePullsWorkflow as jest.Mock).mockImplementation(
@@ -305,7 +272,7 @@ describe('action', () => {
 
       await expect(run()).resolves.toBeUndefined();
 
-      expect(Git).toHaveBeenCalledWith(token, tmpDir.name);
+      expect(Git).toHaveBeenCalledWith(token);
 
       expect(gitInstance.init).toHaveBeenCalledWith();
       expect(gitInstance.fetch).toHaveBeenCalledWith(pullHead.ref);
@@ -322,7 +289,6 @@ describe('action', () => {
     });
 
     it('should detect failed rebase', async () => {
-      ((tmp.dirSync as unknown) as jest.Mock).mockReturnValue(tmpDir);
       ((exec as unknown) as jest.Mock).mockResolvedValue(0);
       (searchForPullsToRebase as jest.Mock).mockResolvedValue(pulls);
       (rebasePullsWorkflow as jest.Mock).mockImplementation(
@@ -342,7 +308,7 @@ describe('action', () => {
 
       await expect(run()).resolves.toBeUndefined();
 
-      expect(Git).toHaveBeenCalledWith(token, tmpDir.name);
+      expect(Git).toHaveBeenCalledWith(token);
 
       expect(gitInstance.init).toHaveBeenCalledWith();
       expect(gitInstance.fetch).toHaveBeenCalledWith(pullHead.ref);
@@ -362,7 +328,6 @@ describe('action', () => {
     });
 
     it('should detect failed push', async () => {
-      ((tmp.dirSync as unknown) as jest.Mock).mockReturnValue(tmpDir);
       ((exec as unknown) as jest.Mock).mockResolvedValue(0);
       (searchForPullsToRebase as jest.Mock).mockResolvedValue(pulls);
       (rebasePullsWorkflow as jest.Mock).mockImplementation(
@@ -382,7 +347,7 @@ describe('action', () => {
 
       await expect(run()).resolves.toBeUndefined();
 
-      expect(Git).toHaveBeenCalledWith(token, tmpDir.name);
+      expect(Git).toHaveBeenCalledWith(token);
 
       expect(gitInstance.init).toHaveBeenCalledWith();
       expect(gitInstance.fetch).toHaveBeenCalledWith(pullHead.ref);
@@ -407,17 +372,12 @@ describe('action', () => {
     ])(
       'should fails if rebasePullsWorkflow fails for %s reason',
       async (reason: string, message: string) => {
-        const tmpDir = {
-          removeCallback: jest.fn(),
-        };
-
         const pulls = [
           {
             number: 1,
           },
         ];
 
-        ((tmp.dirSync as unknown) as jest.Mock).mockReturnValue(tmpDir);
         ((exec as unknown) as jest.Mock).mockResolvedValue(0);
         (searchForPullsToRebase as jest.Mock).mockResolvedValue(pulls);
         (rebasePullsWorkflow as jest.Mock).mockImplementation(
