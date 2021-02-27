@@ -1,10 +1,11 @@
 import tmp from 'tmp';
+import path from 'path';
 
 import * as core from '@actions/core';
 import { getOctokit } from '@actions/github';
 import { exec } from '@actions/exec';
-import { PullGetResponse } from './github';
 
+import { PullGetResponse } from './github';
 import { searchForPullsToRebase } from './search';
 import { rebasePullsWorkflow, RebaseErrorCallback } from './rebase';
 import { Git } from './git';
@@ -113,10 +114,12 @@ export async function run() {
           try {
             tmpDir = tmp.dirSync({ unsafeCleanup: true });
 
-            // copy the current directory somewhere to not affect the repo
-            await exec('cp', ['-r', '.', tmpDir.name]);
+            const directoryPath = path.resolve(tmpDir.name);
 
-            const git = Git(githubToken, tmpDir.name);
+            // copy the current directory somewhere to not affect the repo
+            await exec('cp', ['-r', '.', directoryPath]);
+
+            const git = Git(githubToken, directoryPath);
 
             return checkoutRebaseAndPush(git, pull);
           } finally {
