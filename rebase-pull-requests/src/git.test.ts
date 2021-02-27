@@ -4,7 +4,6 @@ import { exec } from '@actions/exec';
 import { Git } from './git';
 
 const token = 'token';
-const dir = '/tmp/dir';
 const owner = 'facebook';
 const repo = 'react';
 
@@ -22,7 +21,7 @@ github.context = {
 };
 
 describe('git', () => {
-  const git = Git(token, dir);
+  const git = Git(token);
 
   beforeEach(() => {
     (exec as jest.Mock).mockResolvedValue(0);
