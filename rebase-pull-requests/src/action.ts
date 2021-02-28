@@ -90,6 +90,9 @@ export async function run() {
     const label = core.getInput('label') || null;
     const onlyOne = core.getInput('onlyOne') === 'true';
 
+    const gitUserName = core.getInput('gitUserName');
+    const gitUserEmail = core.getInput('gitUserEmail');
+
     const github = getOctokit(githubToken);
 
     const pulls = await searchForPullsToRebase(github, base, label);
@@ -122,7 +125,10 @@ export async function run() {
 
             process.chdir(directoryPath);
 
-            const git = Git(githubToken);
+            const git = Git(githubToken, {
+              name: gitUserName,
+              email: gitUserEmail,
+            });
 
             const result = await checkoutRebaseAndPush(git, pull);
             return result;

@@ -1,7 +1,7 @@
 import { context } from '@actions/github';
 import { exec } from '@actions/exec';
 
-export function Git(token: string) {
+export function Git(token: string, user: { name: string; email: string }) {
   const url = `https://x-access-token:${token}@github.com/${context.repo.owner}/${context.repo.repo}.git`;
 
   const execGit = async (
@@ -16,7 +16,8 @@ export function Git(token: string) {
   };
 
   const init = async () => {
-    await execGit(['config', '--global', 'user.name', '"Rebase Action"']);
+    await execGit(['config', 'user.name', user.name]);
+    await execGit(['config', 'user.email', user.email]);
     await execGit(['remote', 'set-url', 'origin', url]);
   };
 
