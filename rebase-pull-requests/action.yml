@@ -23,6 +23,16 @@ inputs:
     required: false
     default: 'false'
 
+  gitUserName:
+    description: What to use as git user.name config
+    required: false
+    default: 'Rebase Action'
+
+  gitUserEmail:
+    description: What to use as git user.email config
+    required: false
+    default: 'rebase@test.com'
+
 runs:
   using: 'node12'
   main: 'lib/main.js'
