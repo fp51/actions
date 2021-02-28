@@ -23,5 +23,5 @@ runs:
           git push origin gh-pages
 
           # go back to the previous branch
-          git checkout -
+          git checkout @{-1}
         fi
