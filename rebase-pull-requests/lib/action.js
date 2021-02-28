@@ -32,6 +32,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.run = void 0;
+/* eslint-disable no-console */
 const tmp_1 = __importDefault(require("tmp"));
 const path_1 = __importDefault(require("path"));
 const core = __importStar(require("@actions/core"));
@@ -107,39 +108,37 @@ function run() {
                 console.log('Nothing to do');
                 return;
             }
-            else {
-                const prNumbers = pulls.map((pr) => pr.number);
-                yield rebase_1.rebasePullsWorkflow(github, prNumbers, onlyOne, (pull) => __awaiter(this, void 0, void 0, function* () {
-                    // I don't use unsafeCleanup tmp option as it seems to cause trouble
-                    // for @actions/exec
-                    const tmpDir = tmp_1.default.dirSync();
-                    const directoryPath = path_1.default.resolve(tmpDir.name);
-                    console.log({ directoryPath });
-                    try {
-                        // copy the current directory somewhere to not affect the repo
-                        yield exec_1.exec('cp', ['-r', '.', directoryPath]);
-                        process.chdir(directoryPath);
-                        const git = git_1.Git(githubToken, {
-                            name: gitUserName,
-                            email: gitUserEmail,
-                        });
-                        const result = yield checkoutRebaseAndPush(git, pull);
-                        return result;
-                    }
-                    finally {
-                        process.chdir(initialRepoDirectory);
-                        yield exec_1.exec('rm', ['-rf', directoryPath]);
-                    }
-                }), (pullNumber, reason) => __awaiter(this, void 0, void 0, function* () {
-                    if (label) {
-                        console.log(`Removing ${label} label for #${pullNumber}`);
-                        yield label_1.removePRLabel(github, pullNumber, label);
-                    }
-                    console.log(`Comment on ${pullNumber}`);
-                    const comment = buildErrorComment(reason);
-                    yield comment_1.sendPRComment(github, pullNumber, comment);
-                }));
-            }
+            const prNumbers = pulls.map((pr) => pr.number);
+            yield rebase_1.rebasePullsWorkflow(github, prNumbers, onlyOne, (pull) => __awaiter(this, void 0, void 0, function* () {
+                // I don't use unsafeCleanup tmp option as it seems to cause trouble
+                // for @actions/exec
+                const tmpDir = tmp_1.default.dirSync();
+                const directoryPath = path_1.default.resolve(tmpDir.name);
+                console.log({ directoryPath });
+                try {
+                    // copy the current directory somewhere to not affect the repo
+                    yield exec_1.exec('cp', ['-r', '.', directoryPath]);
+                    process.chdir(directoryPath);
+                    const git = git_1.Git(githubToken, {
+                        name: gitUserName,
+                        email: gitUserEmail,
+                    });
+                    const result = yield checkoutRebaseAndPush(git, pull);
+                    return result;
+                }
+                finally {
+                    process.chdir(initialRepoDirectory);
+                    yield exec_1.exec('rm', ['-rf', directoryPath]);
+                }
+            }), (pullNumber, reason) => __awaiter(this, void 0, void 0, function* () {
+                if (label) {
+                    console.log(`Removing ${label} label for #${pullNumber}`);
+                    yield label_1.removePRLabel(github, pullNumber, label);
+                }
+                console.log(`Comment on ${pullNumber}`);
+                const comment = buildErrorComment(reason);
+                yield comment_1.sendPRComment(github, pullNumber, comment);
+            }));
         }
         catch (error) {
             console.error(error);

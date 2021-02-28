@@ -16,6 +16,7 @@ function sendPRComment(github, prNumber, message) {
         return github.issues.createComment({
             owner: github_1.context.repo.owner,
             repo: github_1.context.repo.repo,
+            // eslint-disable-next-line camelcase
             issue_number: prNumber,
             body: message,
         });

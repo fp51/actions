@@ -32,6 +32,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.run = void 0;
+/* eslint-disable no-await-in-loop */
+/* eslint-disable no-console */
 const path_1 = __importDefault(require("path"));
 const fs_extra_1 = __importDefault(require("fs-extra"));
 const core = __importStar(require("@actions/core"));
@@ -40,7 +42,7 @@ function findJavascriptActions(rootDir) {
     return __awaiter(this, void 0, void 0, function* () {
         const contents = yield fs_extra_1.default.readdir(rootDir);
         const buildPath = (fileOrDirectoryName) => path_1.default.join(rootDir, fileOrDirectoryName);
-        const isDirectory = (path) => fs_extra_1.default.statSync(path).isDirectory();
+        const isDirectory = (localPath) => fs_extra_1.default.statSync(localPath).isDirectory();
         const isAction = (directoryPath) => fs_extra_1.default.existsSync(path_1.default.join(directoryPath, 'action.yml'));
         const hasJavascript = (directoryPath) => fs_extra_1.default.existsSync(path_1.default.join(directoryPath, 'package.json'));
         const javascriptActionDirectoryPaths = contents
@@ -76,6 +78,7 @@ function run() {
             const installCommand = core.getInput('install_command', { required: true });
             const buildCommand = core.getInput('build_command', { required: true });
             const actionDirectories = yield findJavascriptActions(actionsDirectory);
+            // eslint-disable-next-line no-restricted-syntax
             for (const actionDirectory of actionDirectories) {
                 console.log(`Found ${actionDirectory} javascript action`);
                 console.log(`Cleaning ${actionDirectory} .gitignore`);

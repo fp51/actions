@@ -19,7 +19,8 @@ function searchForPullsToRebase(github, base, label) {
             q: query,
             sort: 'created',
             order: 'asc',
-            per_page: 10,
+            // eslint-disable-next-line camelcase
+            per_page: 10, // TODO use input for that
         });
         if (response.status !== 200) {
             throw new Error(`Cannot search for pull requests. Code ${response.status}`);

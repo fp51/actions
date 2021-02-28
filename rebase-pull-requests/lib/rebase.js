@@ -10,12 +10,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.rebasePullsWorkflow = void 0;
+/* eslint-disable no-console */
 const github_1 = require("@actions/github");
 function rebasePullWorkflow(github, pullNumber, onRebase, onRebaseError) {
     return __awaiter(this, void 0, void 0, function* () {
         const response = yield github.pulls.get({
             owner: github_1.context.repo.owner,
             repo: github_1.context.repo.repo,
+            // eslint-disable-next-line camelcase
             pull_number: pullNumber,
         });
         const { status, data: pull } = response;
@@ -47,9 +49,7 @@ function rebasePullWorkflow(github, pullNumber, onRebase, onRebaseError) {
             if (rebaseResult === 'nothing to do') {
                 return 'Nothing to do';
             }
-            else {
-                return 'Rebased';
-            }
+            return 'Rebased';
         }
         catch (error) {
             const { head } = pull;
@@ -69,6 +69,7 @@ function rebasePullsWorkflow(github, pullNumbers, onlyFirstPulls, onRebase, onRe
                 return;
             }
             const pullNumber = pullNumbers[pullsIndex];
+            // eslint-disable-next-line no-await-in-loop
             const result = yield rebasePullWorkflow(github, pullNumber, onRebase, onRebaseError);
             if (result === 'Rebased') {
                 console.log(`Pull #${pullNumber} rebased`);
@@ -84,6 +85,7 @@ function rebasePullsWorkflow(github, pullNumbers, onlyFirstPulls, onRebase, onRe
                 return;
             }
             // try to rebase next pulls
+            // eslint-disable-next-line no-plusplus
             pullsIndex++;
         } while (true);
     });

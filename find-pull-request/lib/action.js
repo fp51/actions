@@ -29,6 +29,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.run = void 0;
+/* eslint-disable no-console */
 const core = __importStar(require("@actions/core"));
 const github_1 = require("@actions/github");
 function run() {
@@ -58,6 +59,7 @@ function run() {
                 q: query,
                 sort: 'updated',
                 order: 'desc',
+                // eslint-disable-next-line camelcase
                 per_page: 1,
             });
             if (status !== 200) {
