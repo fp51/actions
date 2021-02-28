@@ -16,20 +16,22 @@ jest.mock('@actions/core');
 
 describe('action', () => {
   beforeAll(() => {
+    // eslint-disable-next-line no-console
     console.log = jest.fn();
   });
 
   afterAll(() => {
+    // eslint-disable-next-line no-console
     (console.log as jest.Mock).mockRestore();
   });
 
   ((fs.readdir as unknown) as jest.Mock).mockImplementation(() =>
-    Promise.resolve(['action1/', 'action2/', 'file.json'])
+    Promise.resolve(['action1/', 'action2/', 'file.json']),
   );
   ((fs.statSync as unknown) as jest.Mock).mockImplementation(
     (path: string) => ({
       isDirectory: () => path.indexOf('.') < 0,
-    })
+    }),
   );
 
   afterEach(() => {
@@ -45,7 +47,7 @@ describe('action', () => {
           }
 
           return true;
-        }
+        },
       );
 
       ((core.getInput as unknown) as jest.Mock).mockImplementation(
@@ -66,7 +68,7 @@ describe('action', () => {
             default:
               throw new Error('Should not goes here in getInput mock');
           }
-        }
+        },
       );
 
       await expect(run()).resolves.toBeUndefined();
@@ -113,7 +115,7 @@ describe('action', () => {
             default:
               throw new Error('Should not goes here in getInput mock');
           }
-        }
+        },
       );
 
       await expect(run()).resolves.toBeUndefined();
@@ -172,7 +174,7 @@ describe('action', () => {
             default:
               throw new Error('Should not goes here in getInput mock');
           }
-        }
+        },
       );
 
       await expect(run()).resolves.toBeUndefined();

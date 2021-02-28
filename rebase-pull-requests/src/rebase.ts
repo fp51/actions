@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { context } from '@actions/github';
 
 import { GitHub, PullGetResponse } from './github';
@@ -5,24 +6,25 @@ import { GitHub, PullGetResponse } from './github';
 type PRWorkflowResult = 'Rebased' | 'Cannot rebase' | 'Nothing to do';
 
 export type RebaseCallback = (
-  pull: PullGetResponse
+  pull: PullGetResponse,
 ) => Promise<'done' | 'nothing to do'>;
 
 export type RebaseErrorCallback = (
   pullNumber: PullGetResponse['number'],
-  reason: 'not mergeable' | 'not rebaseable' | 'cannot rebase' | 'unknown'
+  reason: 'not mergeable' | 'not rebaseable' | 'cannot rebase' | 'unknown',
 ) => Promise<void>;
 
 async function rebasePullWorkflow(
   github: GitHub,
   pullNumber: PullGetResponse['number'],
   onRebase: RebaseCallback,
-  onRebaseError: RebaseErrorCallback
+  onRebaseError: RebaseErrorCallback,
 ): Promise<PRWorkflowResult> {
   const response = await github.pulls.get({
     owner: context.repo.owner,
     repo: context.repo.repo,
 
+    // eslint-disable-next-line camelcase
     pull_number: pullNumber,
   });
 
@@ -39,7 +41,7 @@ async function rebasePullWorkflow(
 
   if (pull.mergeable_state === 'clean') {
     console.log(
-      `PR #${pullNumber} mergeable_state is clean. Nothing to do. Skipping.`
+      `PR #${pullNumber} mergeable_state is clean. Nothing to do. Skipping.`,
     );
     return 'Nothing to do';
   }
@@ -63,9 +65,8 @@ async function rebasePullWorkflow(
 
     if (rebaseResult === 'nothing to do') {
       return 'Nothing to do';
-    } else {
-      return 'Rebased';
     }
+    return 'Rebased';
   } catch (error) {
     const { head } = pull;
 
@@ -83,7 +84,7 @@ export async function rebasePullsWorkflow(
   pullNumbers: PullGetResponse['number'][],
   onlyFirstPulls: boolean,
   onRebase: RebaseCallback,
-  onRebaseError: RebaseErrorCallback
+  onRebaseError: RebaseErrorCallback,
 ) {
   let pullsIndex = 0;
 
@@ -95,11 +96,12 @@ export async function rebasePullsWorkflow(
     }
 
     const pullNumber = pullNumbers[pullsIndex];
+    // eslint-disable-next-line no-await-in-loop
     const result = await rebasePullWorkflow(
       github,
       pullNumber,
       onRebase,
-      onRebaseError
+      onRebaseError,
     );
 
     if (result === 'Rebased') {
@@ -116,6 +118,7 @@ export async function rebasePullsWorkflow(
     }
 
     // try to rebase next pulls
+    // eslint-disable-next-line no-plusplus
     pullsIndex++;
   } while (true);
 }

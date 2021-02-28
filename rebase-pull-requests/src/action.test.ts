@@ -96,14 +96,14 @@ describe('action', () => {
     expect(searchForPullsToRebase).toHaveBeenCalledWith(
       expect.anything(),
       base,
-      label
+      label,
     );
   });
 
   it('should fail if search for pull requests fails', async () => {
     ((exec as unknown) as jest.Mock).mockResolvedValue(0);
     (searchForPullsToRebase as jest.Mock).mockRejectedValue(
-      new Error('search ko')
+      new Error('search ko'),
     );
 
     await expect(run()).resolves.toBeUndefined();
@@ -139,7 +139,7 @@ describe('action', () => {
       [1],
       false,
       expect.any(Function),
-      expect.any(Function)
+      expect.any(Function),
     );
   });
 
@@ -153,7 +153,7 @@ describe('action', () => {
     ((exec as unknown) as jest.Mock).mockResolvedValue(0);
     (searchForPullsToRebase as jest.Mock).mockResolvedValue(pulls);
     (rebasePullsWorkflow as jest.Mock).mockRejectedValue(
-      new Error('rebase ko')
+      new Error('rebase ko'),
     );
 
     await expect(run()).resolves.toBeUndefined();
@@ -194,15 +194,15 @@ describe('action', () => {
           _: GitHub,
           __: PullGetResponse['number'][],
           ___: boolean,
-          rebase: RebaseCallback
+          rebase: RebaseCallback,
         ) => {
           await rebase(pull as PullGetResponse);
-        }
+        },
       );
 
       await expect(run()).resolves.toBeUndefined();
 
-      expect(tmp.dirSync).toHaveBeenCalled();
+      expect(tmp.dirSync).toHaveBeenCalledTimes(1);
       expect(process.chdir).toHaveBeenCalledWith(tmpDirName);
     });
 
@@ -218,17 +218,17 @@ describe('action', () => {
           _: GitHub,
           __: PullGetResponse['number'][],
           ___: boolean,
-          rebase: RebaseCallback
+          rebase: RebaseCallback,
         ) => {
           await rebase(pull as PullGetResponse);
-        }
+        },
       );
 
       await expect(run()).resolves.toBeUndefined();
       expect(exec).toHaveBeenCalledWith('rm', ['-rf', tmpDirName]);
     });
 
-    it('should checkout, rebase and push ', async () => {
+    it('should checkout, rebase and push', async () => {
       ((exec as unknown) as jest.Mock).mockResolvedValue(0);
       (searchForPullsToRebase as jest.Mock).mockResolvedValue(pulls);
       (rebasePullsWorkflow as jest.Mock).mockImplementation(
@@ -236,10 +236,10 @@ describe('action', () => {
           _: GitHub,
           __: PullGetResponse['number'][],
           ___: boolean,
-          rebase: RebaseCallback
+          rebase: RebaseCallback,
         ) => {
           await rebase(pull as PullGetResponse);
-        }
+        },
       );
 
       gitInstance.currentSha.mockResolvedValue(pullHead.sha);
@@ -252,7 +252,7 @@ describe('action', () => {
       expect(gitInstance.init).toHaveBeenCalledWith();
       expect(gitInstance.fetch).toHaveBeenCalledWith(pullHead.ref);
       expect(gitInstance.currentSha).toHaveBeenCalledWith(
-        `origin/${pullHead.ref}`
+        `origin/${pullHead.ref}`,
       );
 
       expect(gitInstance.checkout).toHaveBeenCalledWith(pullHead.ref);
@@ -272,10 +272,10 @@ describe('action', () => {
           _: GitHub,
           __: PullGetResponse['number'][],
           ___: boolean,
-          rebase: RebaseCallback
+          rebase: RebaseCallback,
         ) => {
           await rebase(pull as PullGetResponse);
-        }
+        },
       );
 
       gitInstance.currentSha.mockResolvedValue('another sha');
@@ -288,7 +288,7 @@ describe('action', () => {
       expect(gitInstance.init).toHaveBeenCalledWith();
       expect(gitInstance.fetch).toHaveBeenCalledWith(pullHead.ref);
       expect(gitInstance.currentSha).toHaveBeenCalledWith(
-        `origin/${pullHead.ref}`
+        `origin/${pullHead.ref}`,
       );
 
       expect(gitInstance.checkout).not.toHaveBeenCalled();
@@ -307,10 +307,10 @@ describe('action', () => {
           _: GitHub,
           __: PullGetResponse['number'][],
           ___: boolean,
-          rebase: RebaseCallback
+          rebase: RebaseCallback,
         ) => {
           await rebase(pull as PullGetResponse);
-        }
+        },
       );
 
       gitInstance.currentSha.mockResolvedValue(pullHead.sha);
@@ -324,17 +324,17 @@ describe('action', () => {
       expect(gitInstance.init).toHaveBeenCalledWith();
       expect(gitInstance.fetch).toHaveBeenCalledWith(pullHead.ref);
       expect(gitInstance.currentSha).toHaveBeenCalledWith(
-        `origin/${pullHead.ref}`
+        `origin/${pullHead.ref}`,
       );
 
-      expect(gitInstance.checkout).toHaveBeenCalled();
+      expect(gitInstance.checkout).toHaveBeenCalledTimes(1);
 
-      expect(gitInstance.rebase).toHaveBeenCalled();
+      expect(gitInstance.rebase).toHaveBeenCalledTimes(1);
 
       expect(gitInstance.currentBranch).toHaveBeenCalledWith();
 
       expect(core.setFailed).toHaveBeenCalledWith(
-        'Rebase did not end on the branch'
+        'Rebase did not end on the branch',
       );
     });
 
@@ -346,10 +346,10 @@ describe('action', () => {
           _: GitHub,
           __: PullGetResponse['number'][],
           ___: boolean,
-          rebase: RebaseCallback
+          rebase: RebaseCallback,
         ) => {
           await rebase(pull as PullGetResponse);
-        }
+        },
       );
 
       gitInstance.currentSha.mockResolvedValue(pullHead.sha);
@@ -363,12 +363,12 @@ describe('action', () => {
       expect(gitInstance.init).toHaveBeenCalledWith();
       expect(gitInstance.fetch).toHaveBeenCalledWith(pullHead.ref);
       expect(gitInstance.currentSha).toHaveBeenCalledWith(
-        `origin/${pullHead.ref}`
+        `origin/${pullHead.ref}`,
       );
 
-      expect(gitInstance.checkout).toHaveBeenCalled();
+      expect(gitInstance.checkout).toHaveBeenCalledTimes(1);
 
-      expect(gitInstance.rebase).toHaveBeenCalled();
+      expect(gitInstance.rebase).toHaveBeenCalledTimes(1);
 
       expect(core.setFailed).toHaveBeenCalledWith('push ko');
     });
@@ -397,12 +397,12 @@ describe('action', () => {
             __: PullGetResponse['number'][],
             ___: boolean,
             ____: RebaseCallback,
-            onRebaseError: RebaseErrorCallback
+            onRebaseError: RebaseErrorCallback,
           ) => {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             return onRebaseError(1, reason);
-          }
+          },
         );
 
         await expect(run()).resolves.toBeUndefined();
@@ -410,11 +410,11 @@ describe('action', () => {
         expect(sendPRComment).toHaveBeenCalledWith(
           expect.anything(),
           1,
-          message
+          message,
         );
-        expect(removePRLabel).toHaveBeenCalled();
+        expect(removePRLabel).toHaveBeenCalledTimes(1);
         expect(core.setFailed).not.toHaveBeenCalled();
-      }
+      },
     );
   });
 });

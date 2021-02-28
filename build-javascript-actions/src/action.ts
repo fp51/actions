@@ -1,3 +1,5 @@
+/* eslint-disable no-await-in-loop */
+/* eslint-disable no-console */
 import path from 'path';
 import fs from 'fs-extra';
 
@@ -10,7 +12,8 @@ async function findJavascriptActions(rootDir: string) {
   const buildPath = (fileOrDirectoryName: string) =>
     path.join(rootDir, fileOrDirectoryName);
 
-  const isDirectory = (path: string) => fs.statSync(path).isDirectory();
+  const isDirectory = (localPath: string) =>
+    fs.statSync(localPath).isDirectory();
   const isAction = (directoryPath: string) =>
     fs.existsSync(path.join(directoryPath, 'action.yml'));
   const hasJavascript = (directoryPath: string) =>
@@ -27,7 +30,7 @@ async function findJavascriptActions(rootDir: string) {
 
 async function cleanActionGitignore(
   actionDirectory: string,
-  buildDirectory: string | null
+  buildDirectory: string | null,
 ) {
   const gitignorePath = path.join(actionDirectory, '.gitignore');
   const gitignoreExists = fs.existsSync(gitignorePath);
@@ -57,6 +60,7 @@ export async function run() {
 
     const actionDirectories = await findJavascriptActions(actionsDirectory);
 
+    // eslint-disable-next-line no-restricted-syntax
     for (const actionDirectory of actionDirectories) {
       console.log(`Found ${actionDirectory} javascript action`);
 

@@ -33,7 +33,7 @@ describe('rebase', () => {
     });
 
     await expect(
-      rebasePullsWorkflow(github, pullNumbers, false, onRebase, onRebaseError)
+      rebasePullsWorkflow(github, pullNumbers, false, onRebase, onRebaseError),
     ).rejects.toEqual(new Error(`Can't get pull 1. Status 404.`));
 
     expect(github.pulls.get).toHaveBeenCalledTimes(1);
@@ -56,7 +56,7 @@ describe('rebase', () => {
     });
 
     await expect(
-      rebasePullsWorkflow(github, pullNumbers, false, onRebase, onRebaseError)
+      rebasePullsWorkflow(github, pullNumbers, false, onRebase, onRebaseError),
     ).resolves.toBeUndefined();
 
     expect(onRebase).not.toHaveBeenCalled();
@@ -70,6 +70,7 @@ describe('rebase', () => {
 
     const pull = {
       state: 'open',
+      // eslint-disable-next-line camelcase
       mergeable_state: 'clean',
     };
 
@@ -79,7 +80,7 @@ describe('rebase', () => {
     });
 
     await expect(
-      rebasePullsWorkflow(github, pullNumbers, false, onRebase, onRebaseError)
+      rebasePullsWorkflow(github, pullNumbers, false, onRebase, onRebaseError),
     ).resolves.toBeUndefined();
 
     expect(onRebase).not.toHaveBeenCalled();
@@ -93,6 +94,7 @@ describe('rebase', () => {
 
     const pull = {
       state: 'open',
+      // eslint-disable-next-line camelcase
       mergeable_state: 'behind',
       mergeable: false,
     };
@@ -103,7 +105,7 @@ describe('rebase', () => {
     });
 
     await expect(
-      rebasePullsWorkflow(github, pullNumbers, false, onRebase, onRebaseError)
+      rebasePullsWorkflow(github, pullNumbers, false, onRebase, onRebaseError),
     ).resolves.toBeUndefined();
 
     expect(onRebase).not.toHaveBeenCalled();
@@ -117,6 +119,7 @@ describe('rebase', () => {
 
     const pull = {
       state: 'open',
+      // eslint-disable-next-line camelcase
       mergeable_state: 'behind',
       mergeable: null,
       rebaseable: false,
@@ -128,7 +131,7 @@ describe('rebase', () => {
     });
 
     await expect(
-      rebasePullsWorkflow(github, pullNumbers, false, onRebase, onRebaseError)
+      rebasePullsWorkflow(github, pullNumbers, false, onRebase, onRebaseError),
     ).resolves.toBeUndefined();
 
     expect(onRebase).not.toHaveBeenCalled();
@@ -142,6 +145,7 @@ describe('rebase', () => {
 
     const pull = {
       state: 'open',
+      // eslint-disable-next-line camelcase
       mergeable_state: 'behind',
       mergeable: null,
       rebaseable: true,
@@ -153,7 +157,7 @@ describe('rebase', () => {
     });
 
     await expect(
-      rebasePullsWorkflow(github, pullNumbers, false, onRebase, onRebaseError)
+      rebasePullsWorkflow(github, pullNumbers, false, onRebase, onRebaseError),
     ).resolves.toBeUndefined();
 
     expect(onRebase).toHaveBeenCalledTimes(2);
@@ -167,6 +171,7 @@ describe('rebase', () => {
 
     const pull = {
       state: 'open',
+      // eslint-disable-next-line camelcase
       mergeable_state: 'behind',
       mergeable: null,
       rebaseable: true,
@@ -178,7 +183,7 @@ describe('rebase', () => {
     });
 
     await expect(
-      rebasePullsWorkflow(github, pullNumbers, true, onRebase, onRebaseError)
+      rebasePullsWorkflow(github, pullNumbers, true, onRebase, onRebaseError),
     ).resolves.toBeUndefined();
 
     expect(onRebase).toHaveBeenCalledTimes(1);
@@ -192,6 +197,7 @@ describe('rebase', () => {
 
     const pull = {
       state: 'open',
+      // eslint-disable-next-line camelcase
       mergeable_state: 'behind',
       mergeable: null,
       rebaseable: true,
@@ -206,10 +212,10 @@ describe('rebase', () => {
     });
 
     await expect(
-      rebasePullsWorkflow(github, pullNumbers, false, onRebase, onRebaseError)
+      rebasePullsWorkflow(github, pullNumbers, false, onRebase, onRebaseError),
     ).resolves.toBeUndefined();
 
-    expect(onRebase).toHaveBeenCalled();
-    expect(onRebaseError).toHaveBeenCalled();
+    expect(onRebase).toHaveBeenCalledTimes(1);
+    expect(onRebaseError).toHaveBeenCalledTimes(1);
   });
 });
