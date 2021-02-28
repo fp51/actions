@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import tmp from 'tmp';
 import path from 'path';
 
@@ -13,7 +14,7 @@ import { sendPRComment } from './comment';
 import { removePRLabel } from './label';
 
 const buildErrorComment = (
-  reason: Parameters<RebaseErrorCallback>[1]
+  reason: Parameters<RebaseErrorCallback>[1],
 ): string => {
   switch (reason) {
     case 'not mergeable':
@@ -31,7 +32,7 @@ const buildErrorComment = (
 };
 async function checkoutRebaseAndPush(
   git: Git,
-  pull: PullGetResponse
+  pull: PullGetResponse,
 ): Promise<'nothing to do' | 'done'> {
   const { base, head } = pull;
 
@@ -48,7 +49,7 @@ async function checkoutRebaseAndPush(
 
   if (head.sha !== currentSha) {
     console.log(
-      `Pull request has been updated while running action. Skipping.`
+      `Pull request has been updated while running action. Skipping.`,
     );
     return 'nothing to do';
   }
@@ -103,52 +104,52 @@ export async function run() {
     if (pulls.length === 0) {
       console.log('Nothing to do');
       return;
-    } else {
-      const prNumbers = pulls.map((pr) => pr.number);
-
-      await rebasePullsWorkflow(
-        github,
-        prNumbers,
-        onlyOne,
-        async (pull: PullGetResponse) => {
-          // I don't use unsafeCleanup tmp option as it seems to cause trouble
-          // for @actions/exec
-          const tmpDir = tmp.dirSync();
-
-          const directoryPath = path.resolve(tmpDir.name);
-
-          console.log({ directoryPath });
-
-          try {
-            // copy the current directory somewhere to not affect the repo
-            await exec('cp', ['-r', '.', directoryPath]);
-
-            process.chdir(directoryPath);
-
-            const git = Git(githubToken, {
-              name: gitUserName,
-              email: gitUserEmail,
-            });
-
-            const result = await checkoutRebaseAndPush(git, pull);
-            return result;
-          } finally {
-            process.chdir(initialRepoDirectory);
-            await exec('rm', ['-rf', directoryPath]);
-          }
-        },
-        async (pullNumber, reason) => {
-          if (label) {
-            console.log(`Removing ${label} label for #${pullNumber}`);
-            await removePRLabel(github, pullNumber, label);
-          }
-
-          console.log(`Comment on ${pullNumber}`);
-          const comment = buildErrorComment(reason);
-          await sendPRComment(github, pullNumber, comment);
-        }
-      );
     }
+
+    const prNumbers = pulls.map((pr) => pr.number);
+
+    await rebasePullsWorkflow(
+      github,
+      prNumbers,
+      onlyOne,
+      async (pull: PullGetResponse) => {
+        // I don't use unsafeCleanup tmp option as it seems to cause trouble
+        // for @actions/exec
+        const tmpDir = tmp.dirSync();
+
+        const directoryPath = path.resolve(tmpDir.name);
+
+        console.log({ directoryPath });
+
+        try {
+          // copy the current directory somewhere to not affect the repo
+          await exec('cp', ['-r', '.', directoryPath]);
+
+          process.chdir(directoryPath);
+
+          const git = Git(githubToken, {
+            name: gitUserName,
+            email: gitUserEmail,
+          });
+
+          const result = await checkoutRebaseAndPush(git, pull);
+          return result;
+        } finally {
+          process.chdir(initialRepoDirectory);
+          await exec('rm', ['-rf', directoryPath]);
+        }
+      },
+      async (pullNumber, reason) => {
+        if (label) {
+          console.log(`Removing ${label} label for #${pullNumber}`);
+          await removePRLabel(github, pullNumber, label);
+        }
+
+        console.log(`Comment on ${pullNumber}`);
+        const comment = buildErrorComment(reason);
+        await sendPRComment(github, pullNumber, comment);
+      },
+    );
   } catch (error) {
     console.error(error);
     core.setFailed(error.message);

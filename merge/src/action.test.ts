@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import * as core from '@actions/core';
 import { getOctokit, context } from '@actions/github';
 
@@ -111,10 +112,10 @@ describe('action', () => {
     await expect(run()).resolves.toBeUndefined();
 
     expect(core.setFailed).toHaveBeenCalledWith(
-      `Cannot get pull request #12. Status ${response.status}.`
+      `Cannot get pull request #12. Status ${response.status}.`,
     );
 
-    expect(githubInstance.pulls.get).toHaveBeenCalled();
+    expect(githubInstance.pulls.get).toHaveBeenCalledTimes(1);
     expect(githubInstance.pulls.merge).not.toHaveBeenCalled();
   });
 
@@ -149,7 +150,7 @@ describe('action', () => {
 
     await expect(run()).resolves.toBeUndefined();
 
-    expect(githubInstance.pulls.get).toHaveBeenCalled();
+    expect(githubInstance.pulls.get).toHaveBeenCalledTimes(1);
     expect(githubInstance.pulls.merge).not.toHaveBeenCalled();
 
     expect(core.setFailed).not.toHaveBeenCalled();
@@ -186,7 +187,7 @@ describe('action', () => {
 
     await expect(run()).resolves.toBeUndefined();
 
-    expect(githubInstance.pulls.get).toHaveBeenCalled();
+    expect(githubInstance.pulls.get).toHaveBeenCalledTimes(1);
     expect(githubInstance.pulls.merge).not.toHaveBeenCalled();
 
     expect(core.setFailed).not.toHaveBeenCalled();
@@ -212,6 +213,7 @@ describe('action', () => {
     const pull = {
       state: 'open',
       mergeable: true,
+      // eslint-disable-next-line camelcase
       mergeable_state: 'blocked',
     };
 
@@ -224,7 +226,7 @@ describe('action', () => {
 
     await expect(run()).resolves.toBeUndefined();
 
-    expect(githubInstance.pulls.get).toHaveBeenCalled();
+    expect(githubInstance.pulls.get).toHaveBeenCalledTimes(1);
     expect(githubInstance.pulls.merge).not.toHaveBeenCalled();
 
     expect(core.setFailed).not.toHaveBeenCalled();
@@ -250,6 +252,7 @@ describe('action', () => {
     const pull = {
       state: 'open',
       mergeable: true,
+      // eslint-disable-next-line camelcase
       mergeable_state: 'behind',
     };
 
@@ -262,7 +265,7 @@ describe('action', () => {
 
     await expect(run()).resolves.toBeUndefined();
 
-    expect(githubInstance.pulls.get).toHaveBeenCalled();
+    expect(githubInstance.pulls.get).toHaveBeenCalledTimes(1);
     expect(githubInstance.pulls.merge).not.toHaveBeenCalled();
 
     expect(core.setFailed).not.toHaveBeenCalled();
@@ -288,6 +291,7 @@ describe('action', () => {
     const pull = {
       state: 'open',
       mergeable: true,
+      // eslint-disable-next-line camelcase
       mergeable_state: 'draft',
     };
 
@@ -300,7 +304,7 @@ describe('action', () => {
 
     await expect(run()).resolves.toBeUndefined();
 
-    expect(githubInstance.pulls.get).toHaveBeenCalled();
+    expect(githubInstance.pulls.get).toHaveBeenCalledTimes(1);
     expect(githubInstance.pulls.merge).not.toHaveBeenCalled();
 
     expect(core.setFailed).not.toHaveBeenCalled();
@@ -348,10 +352,10 @@ describe('action', () => {
     await expect(run()).resolves.toBeUndefined();
     expect(core.setFailed).not.toHaveBeenCalled();
 
-    expect(githubInstance.pulls.get).toHaveBeenCalled();
+    expect(githubInstance.pulls.get).toHaveBeenCalledTimes(1);
 
     expect(console.log).toHaveBeenCalledWith(
-      `Pull request has no ${label} label. Stopping.`
+      `Pull request has no ${label} label. Stopping.`,
     );
 
     expect(githubInstance.pulls.merge).not.toHaveBeenCalled();
@@ -404,8 +408,8 @@ describe('action', () => {
 
     await expect(run()).resolves.toBeUndefined();
 
-    expect(githubInstance.pulls.get).toHaveBeenCalled();
-    expect(githubInstance.pulls.merge).toHaveBeenCalled();
+    expect(githubInstance.pulls.get).toHaveBeenCalledTimes(1);
+    expect(githubInstance.pulls.merge).toHaveBeenCalledTimes(1);
 
     expect(core.setFailed).toHaveBeenCalledWith(expect.stringMatching('405'));
   });
@@ -450,11 +454,11 @@ describe('action', () => {
 
     await expect(run()).resolves.toBeUndefined();
 
-    expect(githubInstance.pulls.get).toHaveBeenCalled();
-    expect(githubInstance.pulls.merge).toHaveBeenCalled();
+    expect(githubInstance.pulls.get).toHaveBeenCalledTimes(1);
+    expect(githubInstance.pulls.merge).toHaveBeenCalledTimes(1);
 
     expect(core.setFailed).toHaveBeenCalledWith(
-      `Failed to merge #12. Status ${mergeResponse.status}`
+      `Failed to merge #12. Status ${mergeResponse.status}`,
     );
   });
 
@@ -498,8 +502,8 @@ describe('action', () => {
 
     await expect(run()).resolves.toBeUndefined();
 
-    expect(githubInstance.pulls.get).toHaveBeenCalled();
-    expect(githubInstance.pulls.merge).toHaveBeenCalled();
+    expect(githubInstance.pulls.get).toHaveBeenCalledTimes(1);
+    expect(githubInstance.pulls.merge).toHaveBeenCalledTimes(1);
 
     expect(console.log).toHaveBeenCalledWith(`Pull request #12 merged`);
 
@@ -526,6 +530,7 @@ describe('action', () => {
     const pullOne = {
       state: 'open',
       mergeable: null,
+      // eslint-disable-next-line camelcase
       mergeable_state: 'unknown',
       head: {
         ref: 'branch',
@@ -535,6 +540,7 @@ describe('action', () => {
     const pullTwo = {
       state: 'open',
       mergeable: true,
+      // eslint-disable-next-line camelcase
       mergeable_state: 'unknown',
       head: {
         ref: 'branch',
@@ -625,7 +631,7 @@ describe('action', () => {
     expect(githubInstance.pulls.merge).not.toHaveBeenCalled();
 
     expect(console.log).toHaveBeenCalledWith(
-      `Failed to merge pull request #12`
+      `Failed to merge pull request #12`,
     );
 
     expect(removePRLabel).toHaveBeenCalledTimes(1);

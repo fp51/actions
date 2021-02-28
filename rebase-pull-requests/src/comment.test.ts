@@ -29,13 +29,14 @@ describe('comment', () => {
     };
 
     await expect(
-      sendPRComment((githubInstance as unknown) as GitHub, prNumber, comment)
+      sendPRComment((githubInstance as unknown) as GitHub, prNumber, comment),
     ).resolves.toBeUndefined();
 
     expect(githubInstance.issues.createComment).toHaveBeenCalledWith({
       owner: context.repo.owner,
       repo: context.repo.repo,
 
+      // eslint-disable-next-line camelcase
       issue_number: prNumber,
 
       body: comment,

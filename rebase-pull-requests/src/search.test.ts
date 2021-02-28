@@ -42,7 +42,11 @@ describe('comment', () => {
     });
 
     await expect(
-      searchForPullsToRebase((githubInstance as unknown) as GitHub, base, label)
+      searchForPullsToRebase(
+        (githubInstance as unknown) as GitHub,
+        base,
+        label,
+      ),
     ).resolves.toEqual(pulls);
 
     const baseQuery = `repo:${context.repo.owner}/${context.repo.repo} is:pr base:${base} state:open`;
@@ -52,45 +56,7 @@ describe('comment', () => {
       sort: 'created',
       order: 'asc',
 
-      per_page: 10,
-    });
-  });
-
-  it('should call api to search pulls without label', async () => {
-    const base = 'toto';
-    const label = 'something: hello';
-
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    context.repo = {
-      owner: 'owner',
-      repo: 'repo',
-    };
-
-    const pulls = [
-      {
-        number: 1,
-      },
-    ];
-
-    githubInstance.search.issuesAndPullRequests.mockResolvedValue({
-      status: 200,
-      data: {
-        items: pulls,
-      },
-    });
-
-    await expect(
-      searchForPullsToRebase((githubInstance as unknown) as GitHub, base, label)
-    ).resolves.toEqual(pulls);
-
-    const query = `repo:${context.repo.owner}/${context.repo.repo} is:pr base:${base} state:open label:"${label}"`;
-
-    expect(githubInstance.search.issuesAndPullRequests).toHaveBeenCalledWith({
-      q: query,
-      sort: 'created',
-      order: 'asc',
-
+      // eslint-disable-next-line camelcase
       per_page: 10,
     });
   });
@@ -120,7 +86,11 @@ describe('comment', () => {
     });
 
     await expect(
-      searchForPullsToRebase((githubInstance as unknown) as GitHub, base, label)
+      searchForPullsToRebase(
+        (githubInstance as unknown) as GitHub,
+        base,
+        label,
+      ),
     ).rejects.toEqual(new Error(`Cannot search for pull requests. Code 300`));
   });
 });

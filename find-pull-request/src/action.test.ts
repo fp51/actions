@@ -57,7 +57,7 @@ describe('action', () => {
     await expect(run()).resolves.toBeUndefined();
 
     expect(core.setFailed).toHaveBeenCalledWith(
-      'Search request error. Status 400'
+      'Search request error. Status 400',
     );
   });
 
@@ -98,6 +98,7 @@ describe('action', () => {
       q: query,
       sort: 'updated',
       order: 'desc',
+      // eslint-disable-next-line camelcase
       per_page: 1,
     });
   });
@@ -139,6 +140,7 @@ describe('action', () => {
       q: query,
       sort: 'updated',
       order: 'desc',
+      // eslint-disable-next-line camelcase
       per_page: 1,
     });
   });
@@ -180,6 +182,7 @@ describe('action', () => {
       q: query,
       sort: 'updated',
       order: 'desc',
+      // eslint-disable-next-line camelcase
       per_page: 1,
     });
   });
@@ -221,6 +224,7 @@ describe('action', () => {
       q: query,
       sort: 'updated',
       order: 'desc',
+      // eslint-disable-next-line camelcase
       per_page: 1,
     });
   });
@@ -336,7 +340,7 @@ describe('action', () => {
     await expect(run()).resolves.toBeUndefined();
 
     expect(core.setFailed).toHaveBeenCalledWith(
-      'Missing GITHUB_REF and branch input. Cannot get branch info'
+      'Missing GITHUB_REF and branch input. Cannot get branch info',
     );
   });
 
@@ -376,7 +380,7 @@ describe('action', () => {
     await expect(run()).resolves.toBeUndefined();
 
     expect(core.setFailed).toHaveBeenCalledWith(
-      'Missing GITHUB_REPOSITORY env var'
+      'Missing GITHUB_REPOSITORY env var',
     );
   });
 });

@@ -12,7 +12,6 @@ jest.mock('@actions/github');
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-// eslint-disable-next-line no-import-assign
 github.context = {
   repo: {
     owner,
@@ -36,7 +35,7 @@ describe('git', () => {
     (exec as jest.Mock).mockResolvedValue(1);
 
     await expect(git.init()).rejects.toEqual(
-      new Error(`Command git config user.name ${user.name} failed`)
+      new Error(`Command git config user.name ${user.name} failed`),
     );
   });
 
@@ -51,19 +50,19 @@ describe('git', () => {
       expect(exec).toHaveBeenCalledWith(
         'git',
         ['config', 'user.name', user.name],
-        expect.anything()
+        expect.anything(),
       );
 
       expect(exec).toHaveBeenCalledWith(
         'git',
         ['config', 'user.email', user.email],
-        expect.anything()
+        expect.anything(),
       );
 
       expect(exec).toHaveBeenCalledWith(
         'git',
         ['remote', 'set-url', 'origin', url],
-        expect.anything()
+        expect.anything(),
       );
     });
   });
@@ -76,7 +75,7 @@ describe('git', () => {
       expect(exec).toHaveBeenCalledWith(
         'git',
         ['fetch', 'origin', branch],
-        expect.anything()
+        expect.anything(),
       );
     });
   });
@@ -89,7 +88,7 @@ describe('git', () => {
       expect(exec).toHaveBeenCalledWith(
         'git',
         ['checkout', branch],
-        expect.anything()
+        expect.anything(),
       );
     });
   });
@@ -102,7 +101,7 @@ describe('git', () => {
       expect(exec).toHaveBeenCalledWith(
         'git',
         ['rebase', branch],
-        expect.anything()
+        expect.anything(),
       );
     });
   });
@@ -116,12 +115,12 @@ describe('git', () => {
         (
           _: string,
           __: [],
-          options: { listeners: { stdline: (data: string) => void } }
+          options: { listeners: { stdline: (data: string) => void } },
         ) => {
           options.listeners.stdline(commitSha);
           options.listeners.stdline('\n');
           return 0;
-        }
+        },
       );
 
       const result = await git.currentSha(ref);
@@ -129,7 +128,7 @@ describe('git', () => {
       expect(exec).toHaveBeenCalledWith(
         'git',
         ['rev-parse', ref],
-        expect.anything()
+        expect.anything(),
       );
       expect(result).toEqual(commitSha);
     });
@@ -142,7 +141,7 @@ describe('git', () => {
       expect(exec).toHaveBeenCalledWith(
         'git',
         ['push', '--force-with-lease'],
-        expect.anything()
+        expect.anything(),
       );
     });
   });
@@ -155,12 +154,12 @@ describe('git', () => {
         (
           _: string,
           __: [],
-          options: { listeners: { stdline: (data: string) => void } }
+          options: { listeners: { stdline: (data: string) => void } },
         ) => {
           options.listeners.stdline(branch);
           options.listeners.stdline('\n');
           return 0;
-        }
+        },
       );
 
       const result = await git.currentBranch();
@@ -168,7 +167,7 @@ describe('git', () => {
       expect(exec).toHaveBeenCalledWith(
         'git',
         ['branch', '--show-current'],
-        expect.anything()
+        expect.anything(),
       );
       expect(result).toEqual(branch);
     });
