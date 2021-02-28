@@ -20,8 +20,13 @@ github.context = {
   },
 };
 
+const user = {
+  name: 'Jean',
+  email: 'jean@test.com',
+};
+
 describe('git', () => {
-  const git = Git(token);
+  const git = Git(token, user);
 
   beforeEach(() => {
     (exec as jest.Mock).mockResolvedValue(0);
@@ -31,7 +36,7 @@ describe('git', () => {
     (exec as jest.Mock).mockResolvedValue(1);
 
     await expect(git.init()).rejects.toEqual(
-      new Error('Command git config --global user.name "Rebase Action" failed')
+      new Error(`Command git config user.name ${user.name} failed`)
     );
   });
 
@@ -41,11 +46,17 @@ describe('git', () => {
 
       const url = `https://x-access-token:${token}@github.com/${github.context.repo.owner}/${github.context.repo.repo}.git`;
 
-      expect(exec).toHaveBeenCalledTimes(2);
+      expect(exec).toHaveBeenCalledTimes(3);
 
       expect(exec).toHaveBeenCalledWith(
         'git',
-        ['config', '--global', 'user.name', '"Rebase Action"'],
+        ['config', 'user.name', user.name],
+        expect.anything()
+      );
+
+      expect(exec).toHaveBeenCalledWith(
+        'git',
+        ['config', 'user.email', user.email],
         expect.anything()
       );
 

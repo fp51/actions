@@ -31,6 +31,11 @@ const head = 'head-branch';
 const base = 'toto-branch';
 const label = 'my-label';
 
+const user = {
+  name: 'Jean',
+  email: 'jean@test.com',
+};
+
 process.chdir = jest.fn();
 
 (core.getInput as jest.Mock).mockImplementation((input: string) => {
@@ -46,6 +51,12 @@ process.chdir = jest.fn();
 
     case 'onlyOne':
       return 'false';
+
+    case 'gitUserName':
+      return 'Jean';
+
+    case 'gitUserEmail':
+      return 'jean@test.com';
 
     default:
       throw new Error('should not goes here in getInput mock');
@@ -236,7 +247,7 @@ describe('action', () => {
 
       await expect(run()).resolves.toBeUndefined();
 
-      expect(Git).toHaveBeenCalledWith(token);
+      expect(Git).toHaveBeenCalledWith(token, user);
 
       expect(gitInstance.init).toHaveBeenCalledWith();
       expect(gitInstance.fetch).toHaveBeenCalledWith(pullHead.ref);
@@ -272,7 +283,7 @@ describe('action', () => {
 
       await expect(run()).resolves.toBeUndefined();
 
-      expect(Git).toHaveBeenCalledWith(token);
+      expect(Git).toHaveBeenCalledWith(token, user);
 
       expect(gitInstance.init).toHaveBeenCalledWith();
       expect(gitInstance.fetch).toHaveBeenCalledWith(pullHead.ref);
@@ -308,7 +319,7 @@ describe('action', () => {
 
       await expect(run()).resolves.toBeUndefined();
 
-      expect(Git).toHaveBeenCalledWith(token);
+      expect(Git).toHaveBeenCalledWith(token, user);
 
       expect(gitInstance.init).toHaveBeenCalledWith();
       expect(gitInstance.fetch).toHaveBeenCalledWith(pullHead.ref);
@@ -347,7 +358,7 @@ describe('action', () => {
 
       await expect(run()).resolves.toBeUndefined();
 
-      expect(Git).toHaveBeenCalledWith(token);
+      expect(Git).toHaveBeenCalledWith(token, user);
 
       expect(gitInstance.init).toHaveBeenCalledWith();
       expect(gitInstance.fetch).toHaveBeenCalledWith(pullHead.ref);
