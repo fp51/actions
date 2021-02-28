@@ -97,6 +97,8 @@ function run() {
             const base = baseNameOrRef.replace('refs/heads/', '');
             const label = core.getInput('label') || null;
             const onlyOne = core.getInput('onlyOne') === 'true';
+            const gitUserName = core.getInput('gitUserName');
+            const gitUserEmail = core.getInput('gitUserEmail');
             const github = github_1.getOctokit(githubToken);
             const pulls = yield search_1.searchForPullsToRebase(github, base, label);
             console.log(`${pulls.length} pull requests found`);
@@ -117,7 +119,10 @@ function run() {
                         // copy the current directory somewhere to not affect the repo
                         yield exec_1.exec('cp', ['-r', '.', directoryPath]);
                         process.chdir(directoryPath);
-                        const git = git_1.Git(githubToken);
+                        const git = git_1.Git(githubToken, {
+                            name: gitUserName,
+                            email: gitUserEmail,
+                        });
                         const result = yield checkoutRebaseAndPush(git, pull);
                         return result;
                     }

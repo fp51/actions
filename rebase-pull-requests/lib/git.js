@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Git = void 0;
 const github_1 = require("@actions/github");
 const exec_1 = require("@actions/exec");
-function Git(token) {
+function Git(token, user) {
     const url = `https://x-access-token:${token}@github.com/${github_1.context.repo.owner}/${github_1.context.repo.repo}.git`;
     const execGit = (args, options = {}) => __awaiter(this, void 0, void 0, function* () {
         const result = yield exec_1.exec('git', args, options);
@@ -21,7 +21,8 @@ function Git(token) {
         }
     });
     const init = () => __awaiter(this, void 0, void 0, function* () {
-        yield execGit(['config', '--global', 'user.name', '"Rebase Action"']);
+        yield execGit(['config', 'user.name', user.name]);
+        yield execGit(['config', 'user.email', user.email]);
         yield execGit(['remote', 'set-url', 'origin', url]);
     });
     const checkout = (branch) => execGit(['checkout', branch]);
