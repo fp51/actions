@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import * as core from '@actions/core';
 import { getOctokit } from '@actions/github';
 
@@ -19,7 +20,7 @@ export async function run() {
     const ref = core.getInput('branch') || currentRef;
     if (!ref) {
       throw new Error(
-        'Missing GITHUB_REF and branch input. Cannot get branch info'
+        'Missing GITHUB_REF and branch input. Cannot get branch info',
       );
     }
 
@@ -37,6 +38,7 @@ export async function run() {
       q: query,
       sort: 'updated',
       order: 'desc',
+      // eslint-disable-next-line camelcase
       per_page: 1,
     });
 
@@ -56,7 +58,7 @@ export async function run() {
 
     const pullNumbers = pulls.map((pull) => pull.number);
     console.log(
-      `Found ${pullNumbers.length} pull requests: ${pullNumbers.join(', ')}`
+      `Found ${pullNumbers.length} pull requests: ${pullNumbers.join(', ')}`,
     );
 
     const pullNumber = pullNumbers[0];

@@ -6,7 +6,7 @@ export function Git(token: string, user: { name: string; email: string }) {
 
   const execGit = async (
     args: string[],
-    options: Parameters<typeof exec>[2] = {}
+    options: Parameters<typeof exec>[2] = {},
   ) => {
     const result = await exec('git', args, options);
 
@@ -70,5 +70,5 @@ export function Git(token: string, user: { name: string; email: string }) {
   };
 }
 
-// eslint-disable-next-line no-redeclare
+// eslint-disable-next-line @typescript-eslint/no-redeclare
 export type Git = ReturnType<typeof Git>;

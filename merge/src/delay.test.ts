@@ -1,15 +1,15 @@
 import { delay } from './delay';
 
-jest.useFakeTimers();
-
 describe('delay', () => {
-  it('should delay', () => {
+  it('should delay', async () => {
     expect.assertions(1);
 
-    delay(10000).then(() => {
-      expect(true).toEqual(true);
-    });
+    const start = Date.now();
 
-    jest.advanceTimersByTime(10000);
+    await delay(100);
+
+    const end = Date.now();
+
+    expect(end - start > 80).toEqual(true);
   });
 });

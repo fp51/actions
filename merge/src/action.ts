@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import * as core from '@actions/core';
 import { context, getOctokit } from '@actions/github';
 
@@ -19,18 +20,19 @@ type MergeResult = 'done' | 'skip' | 'impossible' | 'need retry';
 async function merge(
   github: GitHub,
   pullNumber: PullGetResponse['number'],
-  label: string | null
+  label: string | null,
 ): Promise<MergeResult> {
   const response = await github.pulls.get({
     owner: context.repo.owner,
     repo: context.repo.repo,
 
+    // eslint-disable-next-line camelcase
     pull_number: pullNumber,
   });
 
   if (response.status !== 200) {
     throw new Error(
-      `Cannot get pull request #${pullNumber}. Status ${response.status}.`
+      `Cannot get pull request #${pullNumber}. Status ${response.status}.`,
     );
   }
 
@@ -70,16 +72,16 @@ async function merge(
     owner: context.repo.owner,
     repo: context.repo.repo,
 
+    // eslint-disable-next-line camelcase
     pull_number: pullNumber,
   });
 
   if (mergeResponse.status === 200) {
     return 'done';
-  } else {
-    throw new Error(
-      `Failed to merge #${pullNumber}. Status ${mergeResponse.status}`
-    );
   }
+  throw new Error(
+    `Failed to merge #${pullNumber}. Status ${mergeResponse.status}`,
+  );
 }
 
 export async function run() {
@@ -90,7 +92,7 @@ export async function run() {
 
     const pullNumber = parseInt(core.getInput('pullNumber'), 10);
 
-    if (isNaN(pullNumber)) {
+    if (Number.isNaN(pullNumber)) {
       throw Error('Cannot parse pull number');
     }
 
@@ -103,11 +105,14 @@ export async function run() {
     do {
       console.log(`Will try to merge pull request #${pullNumber}`);
 
+      // eslint-disable-next-line no-await-in-loop
       result = await merge(github, pullNumber, label);
       console.log(`Merge result is ${result}`);
 
+      // eslint-disable-next-line no-plusplus
       numberRetries++;
 
+      // eslint-disable-next-line no-await-in-loop
       await delay(RETRY_DELAY);
     } while (numberRetries < 21 && result === 'need retry');
 
@@ -119,7 +124,7 @@ export async function run() {
         await sendPRComment(
           github,
           pullNumber,
-          `Removing label ${label} because pull request is not mergeable `
+          `Removing label ${label} because pull request is not mergeable `,
         );
       }
 

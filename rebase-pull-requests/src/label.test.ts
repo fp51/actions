@@ -29,13 +29,14 @@ describe('label', () => {
     };
 
     await expect(
-      removePRLabel((githubInstance as unknown) as GitHub, prNumber, label)
+      removePRLabel((githubInstance as unknown) as GitHub, prNumber, label),
     ).resolves.toBeUndefined();
 
     expect(githubInstance.issues.removeLabel).toHaveBeenCalledWith({
       owner: context.repo.owner,
       repo: context.repo.repo,
 
+      // eslint-disable-next-line camelcase
       issue_number: prNumber,
 
       name: label,

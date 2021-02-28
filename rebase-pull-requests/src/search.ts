@@ -12,7 +12,7 @@ type SearchPRResponse = {
 export async function searchForPullsToRebase(
   github: GitHub,
   base: string,
-  label: string | null
+  label: string | null,
 ) {
   const baseQuery = `repo:${context.repo.owner}/${context.repo.repo} is:pr base:${base} state:open`;
   const query = label ? `${baseQuery} label:"${label}"` : baseQuery;
@@ -22,6 +22,7 @@ export async function searchForPullsToRebase(
     sort: 'created',
     order: 'asc',
 
+    // eslint-disable-next-line camelcase
     per_page: 10, // TODO use input for that
   });
 

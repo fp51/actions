@@ -6,12 +6,13 @@ import { GitHub, PullGetResponse } from './github';
 export async function sendPRComment(
   github: GitHub,
   prNumber: PullGetResponse['number'],
-  message: string
+  message: string,
 ) {
   return github.issues.createComment({
     owner: context.repo.owner,
     repo: context.repo.repo,
 
+    // eslint-disable-next-line camelcase
     issue_number: prNumber,
 
     body: message,
