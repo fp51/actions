@@ -33,7 +33,7 @@ describe('rebase', () => {
     });
 
     await expect(
-      rebasePullsWorkflow(github, pullNumbers, false, onRebase, onRebaseError),
+      rebasePullsWorkflow(github, pullNumbers, onRebase, onRebaseError),
     ).rejects.toEqual(new Error(`Can't get pull 1. Status 404.`));
 
     expect(github.pulls.get).toHaveBeenCalledTimes(1);
@@ -56,7 +56,7 @@ describe('rebase', () => {
     });
 
     await expect(
-      rebasePullsWorkflow(github, pullNumbers, false, onRebase, onRebaseError),
+      rebasePullsWorkflow(github, pullNumbers, onRebase, onRebaseError),
     ).resolves.toBeUndefined();
 
     expect(onRebase).not.toHaveBeenCalled();
@@ -80,7 +80,7 @@ describe('rebase', () => {
     });
 
     await expect(
-      rebasePullsWorkflow(github, pullNumbers, false, onRebase, onRebaseError),
+      rebasePullsWorkflow(github, pullNumbers, onRebase, onRebaseError),
     ).resolves.toBeUndefined();
 
     expect(onRebase).not.toHaveBeenCalled();
@@ -105,7 +105,7 @@ describe('rebase', () => {
     });
 
     await expect(
-      rebasePullsWorkflow(github, pullNumbers, false, onRebase, onRebaseError),
+      rebasePullsWorkflow(github, pullNumbers, onRebase, onRebaseError),
     ).resolves.toBeUndefined();
 
     expect(onRebase).not.toHaveBeenCalled();
@@ -131,7 +131,7 @@ describe('rebase', () => {
     });
 
     await expect(
-      rebasePullsWorkflow(github, pullNumbers, false, onRebase, onRebaseError),
+      rebasePullsWorkflow(github, pullNumbers, onRebase, onRebaseError),
     ).resolves.toBeUndefined();
 
     expect(onRebase).not.toHaveBeenCalled();
@@ -157,36 +157,10 @@ describe('rebase', () => {
     });
 
     await expect(
-      rebasePullsWorkflow(github, pullNumbers, false, onRebase, onRebaseError),
+      rebasePullsWorkflow(github, pullNumbers, onRebase, onRebaseError),
     ).resolves.toBeUndefined();
 
     expect(onRebase).toHaveBeenCalledTimes(2);
-    expect(onRebaseError).not.toHaveBeenCalled();
-  });
-
-  it('should try to fetch pulls and rebase once because onlyOne', async () => {
-    const pullNumbers = [1, 2];
-    const onRebase = jest.fn();
-    const onRebaseError = jest.fn();
-
-    const pull = {
-      state: 'open',
-      // eslint-disable-next-line camelcase
-      mergeable_state: 'behind',
-      mergeable: null,
-      rebaseable: true,
-    };
-
-    ((github.pulls.get as unknown) as jest.Mock).mockResolvedValue({
-      status: 200,
-      data: pull,
-    });
-
-    await expect(
-      rebasePullsWorkflow(github, pullNumbers, true, onRebase, onRebaseError),
-    ).resolves.toBeUndefined();
-
-    expect(onRebase).toHaveBeenCalledTimes(1);
     expect(onRebaseError).not.toHaveBeenCalled();
   });
 
@@ -212,7 +186,7 @@ describe('rebase', () => {
     });
 
     await expect(
-      rebasePullsWorkflow(github, pullNumbers, false, onRebase, onRebaseError),
+      rebasePullsWorkflow(github, pullNumbers, onRebase, onRebaseError),
     ).resolves.toBeUndefined();
 
     expect(onRebase).toHaveBeenCalledTimes(1);

@@ -38,31 +38,6 @@ const user = {
 
 process.chdir = jest.fn();
 
-(core.getInput as jest.Mock).mockImplementation((input: string) => {
-  switch (input) {
-    case 'token':
-      return token;
-
-    case 'base':
-      return `refs/heads/${base}`;
-
-    case 'label':
-      return label;
-
-    case 'onlyOne':
-      return 'false';
-
-    case 'gitUserName':
-      return 'Jean';
-
-    case 'gitUserEmail':
-      return 'jean@test.com';
-
-    default:
-      throw new Error('should not goes here in getInput mock');
-  }
-});
-
 const gitInstance = {
   init: jest.fn(),
   checkout: jest.fn(),
@@ -74,6 +49,32 @@ const gitInstance = {
 };
 
 describe('action', () => {
+  const getInput = (input: string) => {
+    switch (input) {
+      case 'token':
+        return token;
+
+      case 'base':
+        return `refs/heads/${base}`;
+
+      case 'label':
+        return label;
+
+      case 'prNumber':
+        return '';
+
+      case 'gitUserName':
+        return 'Jean';
+
+      case 'gitUserEmail':
+        return 'jean@test.com';
+
+      default:
+        throw new Error('should not goes here in getInput mock');
+    }
+  };
+  (core.getInput as jest.Mock).mockImplementation(getInput);
+
   beforeEach(() => {
     ((tmp.dirSync as unknown) as jest.Mock)
       .mockReset()
@@ -137,7 +138,6 @@ describe('action', () => {
     expect(rebasePullsWorkflow).toHaveBeenCalledWith(
       expect.anything(),
       [1],
-      false,
       expect.any(Function),
       expect.any(Function),
     );
@@ -162,6 +162,37 @@ describe('action', () => {
   });
 
   describe('rebase a pull request', () => {
+    const getInputWithoutPullNumber = (input: string) => {
+      switch (input) {
+        case 'token':
+          return token;
+
+        case 'base':
+          return `refs/heads/${base}`;
+
+        case 'label':
+          return label;
+
+        case 'prNumber':
+          return '';
+
+        case 'gitUserName':
+          return 'Jean';
+
+        case 'gitUserEmail':
+          return 'jean@test.com';
+
+        default:
+          throw new Error('should not goes here in getInput mock');
+      }
+    };
+
+    beforeEach(() => {
+      (core.getInput as jest.Mock).mockImplementation(
+        getInputWithoutPullNumber,
+      );
+    });
+
     const pulls = [
       {
         number: 1,
@@ -193,7 +224,6 @@ describe('action', () => {
         async (
           _: GitHub,
           __: PullGetResponse['number'][],
-          ___: boolean,
           rebase: RebaseCallback,
         ) => {
           await rebase(pull as PullGetResponse);
@@ -217,7 +247,6 @@ describe('action', () => {
         async (
           _: GitHub,
           __: PullGetResponse['number'][],
-          ___: boolean,
           rebase: RebaseCallback,
         ) => {
           await rebase(pull as PullGetResponse);
@@ -235,7 +264,6 @@ describe('action', () => {
         async (
           _: GitHub,
           __: PullGetResponse['number'][],
-          ___: boolean,
           rebase: RebaseCallback,
         ) => {
           await rebase(pull as PullGetResponse);
@@ -271,7 +299,6 @@ describe('action', () => {
         async (
           _: GitHub,
           __: PullGetResponse['number'][],
-          ___: boolean,
           rebase: RebaseCallback,
         ) => {
           await rebase(pull as PullGetResponse);
@@ -306,7 +333,6 @@ describe('action', () => {
         async (
           _: GitHub,
           __: PullGetResponse['number'][],
-          ___: boolean,
           rebase: RebaseCallback,
         ) => {
           await rebase(pull as PullGetResponse);
@@ -345,7 +371,6 @@ describe('action', () => {
         async (
           _: GitHub,
           __: PullGetResponse['number'][],
-          ___: boolean,
           rebase: RebaseCallback,
         ) => {
           await rebase(pull as PullGetResponse);
@@ -374,6 +399,80 @@ describe('action', () => {
     });
   });
 
+  describe('should read pullNumber', () => {
+    const getInputWithPrNumber = (input: string) => {
+      switch (input) {
+        case 'token':
+          return token;
+
+        case 'base':
+          return `refs/heads/${base}`;
+
+        case 'label':
+          return label;
+
+        case 'prNumber':
+          return '1234';
+
+        case 'gitUserName':
+          return 'Jean';
+
+        case 'gitUserEmail':
+          return 'jean@test.com';
+
+        default:
+          throw new Error('should not goes here in getInput mock');
+      }
+    };
+
+    beforeEach(() => {
+      (core.getInput as jest.Mock).mockImplementation(getInputWithPrNumber);
+    });
+
+    const sha = '123443';
+
+    const pullBase = {
+      ref: base,
+    };
+
+    const pullHead = {
+      ref: head,
+      sha,
+    };
+
+    const pull = {
+      base: pullBase,
+      head: pullHead,
+    };
+
+    it('should create a tmp directory and copy the current directory', async () => {
+      const tmpDirName = '/tmp/safhjsdldfhj';
+      (tmp.dirSync as jest.Mock).mockReturnValue({ name: tmpDirName });
+      ((exec as unknown) as jest.Mock).mockResolvedValue(0);
+      (searchForPullsToRebase as jest.Mock).mockResolvedValue([]);
+      (rebasePullsWorkflow as jest.Mock).mockImplementation(
+        async (
+          _: GitHub,
+          __: PullGetResponse['number'][],
+          rebase: RebaseCallback,
+        ) => {
+          await rebase(pull as PullGetResponse);
+        },
+      );
+
+      await expect(run()).resolves.toBeUndefined();
+
+      expect(searchForPullsToRebase).not.toHaveBeenCalled();
+
+      expect(rebasePullsWorkflow).toHaveBeenCalledWith(
+        expect.anything(),
+        [1234],
+        expect.anything(),
+        expect.anything(),
+      );
+    });
+  });
+
   describe('handle rebase error', () => {
     it.each([
       ['unknown', expect.stringMatching('Unknown')],
@@ -395,8 +494,7 @@ describe('action', () => {
           async (
             _: GitHub,
             __: PullGetResponse['number'][],
-            ___: boolean,
-            ____: RebaseCallback,
+            ___: RebaseCallback,
             onRebaseError: RebaseErrorCallback,
           ) => {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment

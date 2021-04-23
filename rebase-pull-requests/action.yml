@@ -16,12 +16,11 @@ inputs:
     description: Only rebase pull requests with this label
     required: false
 
-  onlyOne:
+  prNumber:
     description: >
-      Only rebase one pull request. Usefull if you have another workflow that
-      automatically merge pull requests. "true"|"false"
+      The pull request to rebase. If not provided, will try to rebase all PRs
+      matching the label.
     required: false
-    default: 'false'
 
   gitUserName:
     description: What to use as git user.name config
