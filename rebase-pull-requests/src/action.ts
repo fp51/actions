@@ -89,29 +89,34 @@ export async function run() {
     const base = baseNameOrRef.replace('refs/heads/', '');
 
     const label = core.getInput('label') || null;
-    const onlyOne = core.getInput('onlyOne') === 'true';
+    const prNumber = parseInt(core.getInput('prNumber'), 10);
 
     const gitUserName = core.getInput('gitUserName');
     const gitUserEmail = core.getInput('gitUserEmail');
 
     const github = getOctokit(githubToken);
 
-    const pulls = await searchForPullsToRebase(github, base, label);
-    console.log(`${pulls.length} pull requests found`);
-
     const initialRepoDirectory = process.cwd();
 
-    if (pulls.length === 0) {
-      console.log('Nothing to do');
-      return;
-    }
+    let prNumbers: number[] = [];
 
-    const prNumbers = pulls.map((pr) => pr.number);
+    if (Number.isNaN(prNumber)) {
+      const pulls = await searchForPullsToRebase(github, base, label);
+      console.log(`${pulls.length} pull requests found`);
+
+      if (pulls.length === 0) {
+        console.log('Nothing to do');
+        return;
+      }
+
+      prNumbers = pulls.map((pr) => pr.number);
+    } else {
+      prNumbers = [prNumber];
+    }
 
     await rebasePullsWorkflow(
       github,
       prNumbers,
-      onlyOne,
       async (pull: PullGetResponse) => {
         // I don't use unsafeCleanup tmp option as it seems to cause trouble
         // for @actions/exec
