@@ -97,19 +97,25 @@ function run() {
             });
             const base = baseNameOrRef.replace('refs/heads/', '');
             const label = core.getInput('label') || null;
-            const onlyOne = core.getInput('onlyOne') === 'true';
+            const prNumber = parseInt(core.getInput('prNumber'), 10);
             const gitUserName = core.getInput('gitUserName');
             const gitUserEmail = core.getInput('gitUserEmail');
             const github = github_1.getOctokit(githubToken);
-            const pulls = yield search_1.searchForPullsToRebase(github, base, label);
-            console.log(`${pulls.length} pull requests found`);
             const initialRepoDirectory = process.cwd();
-            if (pulls.length === 0) {
-                console.log('Nothing to do');
-                return;
+            let prNumbers = [];
+            if (Number.isNaN(prNumber)) {
+                const pulls = yield search_1.searchForPullsToRebase(github, base, label);
+                console.log(`${pulls.length} pull requests found`);
+                if (pulls.length === 0) {
+                    console.log('Nothing to do');
+                    return;
+                }
+                prNumbers = pulls.map((pr) => pr.number);
             }
-            const prNumbers = pulls.map((pr) => pr.number);
-            yield rebase_1.rebasePullsWorkflow(github, prNumbers, onlyOne, (pull) => __awaiter(this, void 0, void 0, function* () {
+            else {
+                prNumbers = [prNumber];
+            }
+            yield rebase_1.rebasePullsWorkflow(github, prNumbers, (pull) => __awaiter(this, void 0, void 0, function* () {
                 // I don't use unsafeCleanup tmp option as it seems to cause trouble
                 // for @actions/exec
                 const tmpDir = tmp_1.default.dirSync();

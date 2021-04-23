@@ -60,7 +60,7 @@ function rebasePullWorkflow(github, pullNumber, onRebase, onRebaseError) {
         }
     });
 }
-function rebasePullsWorkflow(github, pullNumbers, onlyFirstPulls, onRebase, onRebaseError) {
+function rebasePullsWorkflow(github, pullNumbers, onRebase, onRebaseError) {
     return __awaiter(this, void 0, void 0, function* () {
         let pullsIndex = 0;
         do {
@@ -79,10 +79,6 @@ function rebasePullsWorkflow(github, pullNumbers, onlyFirstPulls, onRebase, onRe
             }
             else {
                 console.log(`Cannot rebase #${pullNumber}`);
-            }
-            // stop after one pulls rebased if onlyFirstpulls is true
-            if (onlyFirstPulls && result === 'Rebased') {
-                return;
             }
             // try to rebase next pulls
             // eslint-disable-next-line no-plusplus
