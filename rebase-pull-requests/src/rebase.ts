@@ -82,7 +82,6 @@ async function rebasePullWorkflow(
 export async function rebasePullsWorkflow(
   github: GitHub,
   pullNumbers: PullGetResponse['number'][],
-  onlyFirstPulls: boolean,
   onRebase: RebaseCallback,
   onRebaseError: RebaseErrorCallback,
 ) {
@@ -110,11 +109,6 @@ export async function rebasePullsWorkflow(
       console.log(`Nothing to do for #${pullNumber}`);
     } else {
       console.log(`Cannot rebase #${pullNumber}`);
-    }
-
-    // stop after one pulls rebased if onlyFirstpulls is true
-    if (onlyFirstPulls && result === 'Rebased') {
-      return;
     }
 
     // try to rebase next pulls
